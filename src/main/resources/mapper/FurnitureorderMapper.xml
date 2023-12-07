@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tencent.wxcloudrun.dao.FurnitureorderMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.tencent.wxcloudrun.entity.Furnitureorder">
+        <id column="FOId" property="FOId" />
+        <result column="FONo" property="FONo" />
+        <result column="FOType" property="FOType" />
+        <result column="FOPrice" property="FOPrice" />
+        <result column="FOFId" property="FOFId" />
+        <result column="FOFAId" property="FOFAId" />
+        <result column="FODiscountPrice" property="FODiscountPrice" />
+        <result column="FOBalance" property="FOBalance" />
+        <result column="FOStatus" property="FOStatus" />
+        <result column="FOPayStatus" property="FOPayStatus" />
+        <result column="FOPayType" property="FOPayType" />
+        <result column="AdjPrice" property="AdjPrice" />
+        <result column="FOCId" property="FOCId" />
+        <result column="FOCTel" property="FOCTel" />
+        <result column="FOCTDAddress" property="FOCTDAddress" />
+        <result column="FOCTDTime" property="FOCTDTime" />
+        <result column="FOCTDWay" property="FOCTDWay" />
+        <result column="FORemark" property="FORemark" />
+        <result column="CreateTime" property="CreateTime" />
+        <result column="CreateUser" property="CreateUser" />
+        <result column="UpdateTime" property="UpdateTime" />
+        <result column="UpdateUser" property="UpdateUser" />
+        <result column="IsDeleted" property="IsDeleted" />
+    </resultMap>
+</mapper>

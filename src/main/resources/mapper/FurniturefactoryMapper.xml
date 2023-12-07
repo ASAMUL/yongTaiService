@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tencent.wxcloudrun.dao.FurniturefactoryMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.tencent.wxcloudrun.entity.Furniturefactory">
+        <id column="FFId" property="FFId" />
+        <result column="FFName" property="FFName" />
+        <result column="FFAddress" property="FFAddress" />
+        <result column="FFTel" property="FFTel" />
+        <result column="CreateTime" property="CreateTime" />
+        <result column="CreateUser" property="CreateUser" />
+        <result column="UpdateTime" property="UpdateTime" />
+        <result column="UpdateUser" property="UpdateUser" />
+        <result column="IsDeleted" property="IsDeleted" />
+    </resultMap>
+</mapper>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tencent.wxcloudrun.dao.UserMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.tencent.wxcloudrun.entity.User">
+        <id column="UId" property="UId" />
+        <result column="UserName" property="UserName" />
+        <result column="UserPwd" property="UserPwd" />
+        <result column="UserType" property="UserType" />
+        <result column="Gender" property="Gender" />
+        <result column="UserLevel" property="UserLevel" />
+        <result column="NickName" property="NickName" />
+        <result column="Mobile" property="Mobile" />
+        <result column="Avatar" property="Avatar" />
+        <result column="Weixin_OpenId" property="weixinOpenid" />
+        <result column="Weixin_SessionKey" property="weixinSessionkey" />
+        <result column="CreateTime" property="CreateTime" />
+        <result column="CreateUser" property="CreateUser" />
+        <result column="UpdateTime" property="UpdateTime" />
+        <result column="UpdateUser" property="UpdateUser" />
+        <result column="IsDeleted" property="IsDeleted" />
+    </resultMap>
+</mapper>
