@@ -10,7 +10,9 @@ import com.tencent.wxcloudrun.vo.Option;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,8 +29,13 @@ import java.util.stream.Collectors;
 public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements DictService {
 
     @Override
-    public Result<List<Option>> getByCode(String code) {
+    public Result<List<Option>> getByCode(String code, HttpServletRequest request) {
         log.info("查询字典表 code:{}", code);
+        Enumeration<String> headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String s = headerNames.nextElement();
+            log.info("header:{}", s);
+        }
         List<Dict> list = this.lambdaQuery()
                 .eq(Dict::getDictCode, code)
                 .list();

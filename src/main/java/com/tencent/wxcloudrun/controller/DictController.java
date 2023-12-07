@@ -11,6 +11,7 @@ import com.tencent.wxcloudrun.service.DictService;
 import com.tencent.wxcloudrun.entity.Dict;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -30,7 +31,7 @@ public class DictController {
     private final DictService dictService;
 
     @GetMapping("/getByCode")
-    public Result<List<Option>> getByCode(@RequestParam String code) {
-        return dictService.getByCode(code);
+    public Result<List<Option>> getByCode(@RequestParam String code, HttpServletRequest request) {
+        return dictService.getByCode(code,request);
     }
 }
