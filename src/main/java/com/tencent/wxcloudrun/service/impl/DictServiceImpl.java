@@ -11,9 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -31,11 +29,14 @@ public class DictServiceImpl extends ServiceImpl<DictMapper, Dict> implements Di
     @Override
     public Result<List<Option>> getByCode(String code, HttpServletRequest request) {
         log.info("查询字典表 code:{}", code);
+        Map<String, String> headers = new HashMap<>();
         Enumeration<String> headerNames = request.getHeaderNames();
+
         while (headerNames.hasMoreElements()) {
-            String s = headerNames.nextElement();
-            log.info("header:{}", s);
+            String headerName = headerNames.nextElement();
+            headers.put(headerName, request.getHeader(headerName));
         }
+        headers.forEach((k, v) -> log.info("header:{} value:{}", k, v));
         List<Dict> list = this.lambdaQuery()
                 .eq(Dict::getDictCode, code)
                 .list();
