@@ -1,5 +1,6 @@
 package com.tencent.wxcloudrun.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.http.HttpStatus;
@@ -17,12 +18,11 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since 2023-12-08
  */
 @RestController
-@RequestMapping("/furniture")
+@RequestMapping("/api/furniture")
+@RequiredArgsConstructor
 public class FurnitureController {
 
-
-    @Autowired
-    private FurnitureService furnitureService;
+    private final FurnitureService furnitureService;
 
     @GetMapping(value = "/")
     public ResponseEntity<Page<Furniture>> list(@RequestParam(required = false) Integer current, @RequestParam(required = false) Integer pageSize) {

@@ -18,7 +18,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @TableName("FurnitureType")
-public class Furnituretype implements Serializable {
+public class FurnitureType implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

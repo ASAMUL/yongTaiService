@@ -1,12 +1,16 @@
 package com.tencent.wxcloudrun.controller;
 
+import com.tencent.wxcloudrun.entity.Result;
+import com.tencent.wxcloudrun.vo.Option;
 import org.springframework.web.bind.annotation.*;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import com.tencent.wxcloudrun.service.FurnituretypeService;
-import com.tencent.wxcloudrun.entity.Furnituretype;
+import com.tencent.wxcloudrun.entity.FurnitureType;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 /**
  * <p>
@@ -17,45 +21,16 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since 2023-12-08
  */
 @RestController
-@RequestMapping("/furnituretype")
+@RequestMapping("/api/furnitureType")
 public class FurnituretypeController {
 
 
     @Autowired
     private FurnituretypeService furnituretypeService;
 
-    @GetMapping(value = "/")
-    public ResponseEntity<Page<Furnituretype>> list(@RequestParam(required = false) Integer current, @RequestParam(required = false) Integer pageSize) {
-        if (current == null) {
-            current = 1;
-        }
-        if (pageSize == null) {
-            pageSize = 10;
-        }
-        Page<Furnituretype> aPage = furnituretypeService.page(new Page<>(current, pageSize));
-        return new ResponseEntity<>(aPage, HttpStatus.OK);
+    @GetMapping
+    public Result<List<Option>> furnitureType() {
+        return furnituretypeService.furnitureType();
     }
 
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<Furnituretype> getById(@PathVariable("id") String id) {
-        return new ResponseEntity<>(furnituretypeService.getById(id), HttpStatus.OK);
-    }
-
-    @PostMapping(value = "/create")
-    public ResponseEntity<Object> create(@RequestBody Furnituretype params) {
-        furnituretypeService.save(params);
-        return new ResponseEntity<>("created successfully", HttpStatus.OK);
-    }
-
-    @PostMapping(value = "/delete/{id}")
-    public ResponseEntity<Object> delete(@PathVariable("id") String id) {
-        furnituretypeService.removeById(id);
-        return new ResponseEntity<>("deleted successfully", HttpStatus.OK);
-    }
-
-    @PostMapping(value = "/update")
-    public ResponseEntity<Object> delete(@RequestBody Furnituretype params) {
-        furnituretypeService.updateById(params);
-        return new ResponseEntity<>("updated successfully", HttpStatus.OK);
-    }
 }

@@ -3,16 +3,29 @@
 <mapper namespace="com.tencent.wxcloudrun.dao.FurnituretypeMapper">
 
     <!-- 通用查询映射结果 -->
-    <resultMap id="BaseResultMap" type="com.tencent.wxcloudrun.entity.Furnituretype">
-        <id column="FTId" property="FTId" />
-        <result column="FTParentId" property="FTParentId" />
-        <result column="FTName" property="FTName" />
-        <result column="IsAccessory" property="IsAccessory" />
-        <result column="IsMenu" property="IsMenu" />
-        <result column="CreateTime" property="CreateTime" />
-        <result column="CreateUser" property="CreateUser" />
-        <result column="UpdateTime" property="UpdateTime" />
-        <result column="UpdateUser" property="UpdateUser" />
-        <result column="IsDeleted" property="IsDeleted" />
+    <resultMap id="BaseResultMap" type="com.tencent.wxcloudrun.vo.Option">
+        <result column="value" property="value" />
+        <result column="label" property="label" />
+        <collection property="children" ofType="com.tencent.wxcloudrun.vo.Option">
+            <result column="children_value" property="value" />
+            <result column="children_label" property="label" />
+        </collection>
     </resultMap>
+
+    <select id="furnitureType" resultMap="BaseResultMap">
+        select
+            FurnitureType.FTId as value,
+            FurnitureType.FTName as label,
+            child.FTId as children_value,
+            child.FTName as children_label
+        from
+            FurnitureType
+        left join FurnitureType as child on child.FTParentId = FurnitureType.FTId
+            and child.IsDeleted = 0
+        where
+             FurnitureType.IsDeleted = 0
+        and
+            FurnitureType.FTParentId = 0
+
+    </select>
 </mapper>
