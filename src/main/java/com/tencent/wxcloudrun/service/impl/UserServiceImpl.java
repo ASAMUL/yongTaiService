@@ -40,7 +40,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return;
         }
         // 不存在则创建
-       User.builder()
+        user = User.builder()
                .weixinOpenid(AESUtil.encrypt(openId))
                .NickName(userForm.getNickName())
                .Avatar(userForm.getAvatarUrl())

@@ -24,7 +24,7 @@ public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "UId", type = IdType.AUTO)
-    private Integer UId;
+    private Integer userId;
 
     /**
      * 用户名称
