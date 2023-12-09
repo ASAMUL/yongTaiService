@@ -2,6 +2,9 @@ package com.tencent.wxcloudrun.service;
 
 import com.tencent.wxcloudrun.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.tencent.wxcloudrun.form.UserForm;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * <p>
@@ -12,5 +15,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2023-12-08
  */
 public interface UserService extends IService<User> {
-
+    /**
+     * 微信登录
+     * @param request request
+     * @param userForm 用户表单
+     */
+    void loginByWechat(HttpServletRequest request, UserForm userForm);
 }

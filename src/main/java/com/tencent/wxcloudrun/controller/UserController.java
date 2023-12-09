@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since 2023-12-08
  */
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 public class UserController {
 
 
