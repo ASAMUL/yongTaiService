@@ -2,6 +2,10 @@ package com.tencent.wxcloudrun.service;
 
 import com.tencent.wxcloudrun.entity.Furniture;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.tencent.wxcloudrun.entity.Result;
+import com.tencent.wxcloudrun.vo.FurnitureVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -12,5 +16,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2023-12-08
  */
 public interface FurnitureService extends IService<Furniture> {
-
+    /**
+     * 根据类型查询家具
+     * @param type 类型
+     * @param isParent 是否是父级
+     * @return 家具
+     */
+    Result<List<FurnitureVO>> queryFurnitureByType(String type,String isParent);
 }

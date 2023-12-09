@@ -1,5 +1,7 @@
 package com.tencent.wxcloudrun.controller;
 
+import com.tencent.wxcloudrun.entity.Result;
+import com.tencent.wxcloudrun.vo.FurnitureVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -8,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import com.tencent.wxcloudrun.service.FurnitureService;
 import com.tencent.wxcloudrun.entity.Furniture;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 /**
  * <p>
@@ -24,16 +28,10 @@ public class FurnitureController {
 
     private final FurnitureService furnitureService;
 
-    @GetMapping(value = "/")
-    public ResponseEntity<Page<Furniture>> list(@RequestParam(required = false) Integer current, @RequestParam(required = false) Integer pageSize) {
-        if (current == null) {
-            current = 1;
-        }
-        if (pageSize == null) {
-            pageSize = 10;
-        }
-        Page<Furniture> aPage = furnitureService.page(new Page<>(current, pageSize));
-        return new ResponseEntity<>(aPage, HttpStatus.OK);
+    @GetMapping(value = "/queryFurnitureByType")
+    public Result<List<FurnitureVO>> list(@RequestParam("type") String type,@RequestParam(value = "isParent",required = false) String isParent) {
+        return furnitureService.queryFurnitureByType(type,isParent);
+
     }
 
     @GetMapping(value = "/{id}")
