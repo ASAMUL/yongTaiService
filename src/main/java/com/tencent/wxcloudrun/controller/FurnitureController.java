@@ -1,5 +1,6 @@
 package com.tencent.wxcloudrun.controller;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.tencent.wxcloudrun.entity.Result;
 import com.tencent.wxcloudrun.vo.FurnitureVO;
 import lombok.RequiredArgsConstructor;
@@ -35,8 +36,10 @@ public class FurnitureController {
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<Furniture> getById(@PathVariable("id") String id) {
-        return new ResponseEntity<>(furnitureService.getById(id), HttpStatus.OK);
+    public Result<FurnitureVO> getById(@PathVariable("id") String id) {
+        Furniture byId = furnitureService.getById(id);
+        FurnitureVO vo = BeanUtil.copyProperties(byId, FurnitureVO.class);
+        return Result.OK(vo);
     }
 
     @PostMapping(value = "/create")
