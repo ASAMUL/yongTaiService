@@ -9,7 +9,7 @@ import java.util.Base64;
 public class AESUtil {
 
     private static final String ALGORITHM = "AES";
-    private static final String KEY = "xinXinJieYouYanJi87";
+    private static final String KEY = "xinXinYouYanJi87";
 
     public static String encrypt(String value) {
         try {
