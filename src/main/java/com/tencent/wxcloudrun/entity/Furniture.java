@@ -60,7 +60,7 @@ public class Furniture implements Serializable {
      * 自带配件ID
      */
     @TableField("FAId")
-    private Integer FAId;
+    private String FAId;
 
     /**
      * 是否有可替换配件

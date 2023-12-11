@@ -2,6 +2,9 @@ package com.tencent.wxcloudrun.service;
 
 import com.tencent.wxcloudrun.entity.Furnitureaccessory;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.tencent.wxcloudrun.vo.FurnitureAccessoryVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -12,5 +15,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2023-12-08
  */
 public interface FurnitureaccessoryService extends IService<Furnitureaccessory> {
-
+    /**
+     * id查询配件
+     * @param faId 家具id
+     * @return 配件列表
+     */
+    List<FurnitureAccessoryVO> queryByFurnitureId(String faId);
 }

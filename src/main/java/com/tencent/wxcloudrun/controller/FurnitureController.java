@@ -1,7 +1,10 @@
 package com.tencent.wxcloudrun.controller;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.tencent.wxcloudrun.entity.Furnitureaccessory;
 import com.tencent.wxcloudrun.entity.Result;
+import com.tencent.wxcloudrun.service.FurnitureaccessoryService;
+import com.tencent.wxcloudrun.vo.FurnitureAccessoryVO;
 import com.tencent.wxcloudrun.vo.FurnitureVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +31,7 @@ import java.util.List;
 public class FurnitureController {
 
     private final FurnitureService furnitureService;
+    private final FurnitureaccessoryService furnitureaccessoryService;
 
     @GetMapping(value = "/queryFurnitureByType")
     public Result<List<FurnitureVO>> list(@RequestParam("type") String type,@RequestParam(value = "isParent",required = false) String isParent) {
@@ -39,6 +43,9 @@ public class FurnitureController {
     public Result<FurnitureVO> getById(@PathVariable("id") String id) {
         Furniture byId = furnitureService.getById(id);
         FurnitureVO vo = BeanUtil.copyProperties(byId, FurnitureVO.class);
+        // 获取配件
+        List<FurnitureAccessoryVO> accessories = furnitureaccessoryService.queryByFurnitureId(byId.getFAId());
+        vo.setFurnitureAccessoryList(accessories);
         return Result.OK(vo);
     }
 

@@ -1,11 +1,9 @@
 package com.tencent.wxcloudrun.vo;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 public class FurnitureVO {
@@ -49,7 +47,7 @@ public class FurnitureVO {
      * 自带配件ID
      */
 
-    private Integer FAId;
+    private String FAId;
 
     /**
      * 是否有可替换配件
@@ -110,5 +108,9 @@ public class FurnitureVO {
      */
 
     private String FRemark;
+    /**
+     * 家具配件列表
+     */
+    private List<FurnitureAccessoryVO> furnitureAccessoryList;
 
 }
