@@ -45,6 +45,7 @@ public class FurnitureaccessoryServiceImpl extends ServiceImpl<Furnitureaccessor
         List<Furnitureaccessory> list = this.lambdaQuery()
                 .eq(Furnitureaccessory::getIsPublic, 1)
                 .eq(Furnitureaccessory::getIsDeleted, 0)
+                .notIn(CollUtil.isNotEmpty(ids), Furnitureaccessory::getFAId, ids)
                 .list();
         if (CollUtil.isNotEmpty(ids)) {
             List<Furnitureaccessory> privateFa = this.lambdaQuery()
