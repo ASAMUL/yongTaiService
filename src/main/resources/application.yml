@@ -5,9 +5,9 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://sh-cynosdbmysql-grp-p56h17m8.sql.tencentcdb.com:27119/yongTai
-    username: root
-    password: yhBb4zRY
+    url: jdbc:mysql://${MYSQL_ADDRESS}/yongTai
+    username: ${MYSQL_USERNAME}
+    password: ${MySQL_PASSWORD}
   mvc:
     view:
       suffix: .html

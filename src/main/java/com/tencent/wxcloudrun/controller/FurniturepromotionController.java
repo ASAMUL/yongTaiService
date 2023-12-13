@@ -1,5 +1,7 @@
 package com.tencent.wxcloudrun.controller;
 
+import com.tencent.wxcloudrun.entity.Result;
+import com.tencent.wxcloudrun.vo.FurniturePromotionVO;
 import org.springframework.web.bind.annotation.*;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.http.HttpStatus;
@@ -7,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import com.tencent.wxcloudrun.service.FurniturepromotionService;
 import com.tencent.wxcloudrun.entity.Furniturepromotion;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 /**
  * <p>
@@ -17,23 +21,16 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since 2023-12-08
  */
 @RestController
-@RequestMapping("/furniturepromotion")
+@RequestMapping("/api/furniturePromotion")
 public class FurniturepromotionController {
 
 
     @Autowired
     private FurniturepromotionService furniturepromotionService;
 
-    @GetMapping(value = "/")
-    public ResponseEntity<Page<Furniturepromotion>> list(@RequestParam(required = false) Integer current, @RequestParam(required = false) Integer pageSize) {
-        if (current == null) {
-            current = 1;
-        }
-        if (pageSize == null) {
-            pageSize = 10;
-        }
-        Page<Furniturepromotion> aPage = furniturepromotionService.page(new Page<>(current, pageSize));
-        return new ResponseEntity<>(aPage, HttpStatus.OK);
+    @GetMapping
+    public Result<List<FurniturePromotionVO>> list() {
+        return  furniturepromotionService.listByDate();
     }
 
     @GetMapping(value = "/{id}")
