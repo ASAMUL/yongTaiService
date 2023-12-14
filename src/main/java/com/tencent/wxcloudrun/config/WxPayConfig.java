@@ -1,5 +1,6 @@
 package com.tencent.wxcloudrun.config;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSON;
 import cn.hutool.json.JSONUtil;
@@ -11,9 +12,15 @@ import com.wechat.pay.java.core.exception.ServiceException;
 import com.wechat.pay.java.core.util.PemUtil;
 import com.wechat.pay.java.service.payments.jsapi.JsapiServiceExtension;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.security.PrivateKey;
 import java.util.function.Supplier;
 
@@ -27,16 +34,25 @@ public class WxPayConfig {
     public String notifyUrl = "https://springboot-6c9r-82697-6-1322811340.sh.run.tcloudbase.com/wxPay/callBack";
     public static String mchSerialNo = "520C811692D95566E5363E8B3ECD2B79F0CBC2BA";
     public static String apiV3Key = "Wtx514SnowMoonFlowersWeiXinShaBi";
+    private static final String FILE_PATH = "/apiclient_key.pem";
     private static RSAAutoCertificateConfig config = null;
     private static JsapiServiceExtension jsapiServiceExtension = null;
     public RSAAutoCertificateConfig  getWxConfig() {
         if (ObjectUtil.isNull(config)) {
             synchronized (this) {
                 if (ObjectUtil.isNull(config)) {
-                    PrivateKey merchantPrivateKey = PemUtil.loadPrivateKeyFromPath("src/main/resources/apiclient_key.pem");
+                    Resource resource = new ClassPathResource("apiclient_key.pem");
+                    try {
+
+                        File file = resource.getFile();
+                        FileUtil.copy(file, new File(FILE_PATH),true);
+                    } catch (IOException e) {
+                        log.error("获取微信支付配置异常", e);
+                        throw new RuntimeException("获取微信支付配置异常");
+                    }
                     config =  new RSAAutoCertificateConfig.Builder()
                             .merchantId(mchId)
-                            .privateKey(merchantPrivateKey)
+                            .privateKeyFromPath(FILE_PATH)
                             .merchantSerialNumber(mchSerialNo)
                             .apiV3Key(apiV3Key)
                             .build();
