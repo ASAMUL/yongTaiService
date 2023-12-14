@@ -19,7 +19,7 @@ public class WxPayServiceImpl implements WxPayService {
     private final WxPayConfig wxPayConfig;
 
     @Override
-    public void createWxPayOrder(HttpServletRequest request, String orderId) {
+    public PrepayWithRequestPaymentResponse createWxPayOrder(HttpServletRequest request, String orderId) {
         PrepayRequest prepayRequest = new PrepayRequest();
         prepayRequest.setAppid(wxPayConfig.getAppid());
         prepayRequest.setMchid(wxPayConfig.getMchId());
@@ -35,7 +35,6 @@ public class WxPayServiceImpl implements WxPayService {
         Payer payer = new Payer();
         payer.setOpenid(request.getHeader("X-WX-OPENID"));
         prepayRequest.setPayer(payer);
-        PrepayWithRequestPaymentResponse prepayWithRequestPaymentResponse = wxPayConfig.payExecute(() -> wxPayConfig.getJsapiService().prepayWithRequestPayment(prepayRequest));
-        log.info("prepayWithRequestPaymentResponse:{}", prepayWithRequestPaymentResponse);
+        return wxPayConfig.payExecute(() -> wxPayConfig.getJsapiService().prepayWithRequestPayment(prepayRequest));
     }
 }

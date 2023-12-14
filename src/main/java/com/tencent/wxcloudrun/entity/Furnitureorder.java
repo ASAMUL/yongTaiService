@@ -1,13 +1,13 @@
 package com.tencent.wxcloudrun.entity;
 import java.math.BigDecimal;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
+
+import com.baomidou.mybatisplus.annotation.*;
+
 import java.util.Date;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+
+import lombok.*;
+
 /**
  * <p>
  * 家具订单表
@@ -17,7 +17,9 @@ import lombok.EqualsAndHashCode;
  * @since 2023-12-08
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @TableName("FurnitureOrder")
 public class Furnitureorder implements Serializable {
 
@@ -54,7 +56,7 @@ public class Furnitureorder implements Serializable {
      * 订单购买配件编号
      */
     @TableField("FOFAId")
-    private Integer FOFAId;
+    private String FOFAId;
 
     /**
      * 订单折扣价
@@ -131,25 +133,25 @@ public class Furnitureorder implements Serializable {
     /**
      * 创建时间
      */
-    @TableField("CreateTime")
+    @TableField(value = "CreateTime",fill = FieldFill.INSERT)
     private Date CreateTime;
 
     /**
      * 创建用户id
      */
-    @TableField("CreateUser")
+    @TableField(value = "CreateUser",fill = FieldFill.INSERT)
     private String CreateUser;
 
     /**
      * 更新时间
      */
-    @TableField("UpdateTime")
+    @TableField(value = "UpdateTime",fill = FieldFill.INSERT_UPDATE)
     private Date UpdateTime;
 
     /**
      * 更新用户id
      */
-    @TableField("UpdateUser")
+    @TableField(value = "UpdateUser",fill = FieldFill.INSERT_UPDATE)
     private String UpdateUser;
 
     /**

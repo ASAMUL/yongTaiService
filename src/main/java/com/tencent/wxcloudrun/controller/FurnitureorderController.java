@@ -1,15 +1,14 @@
 package com.tencent.wxcloudrun.controller;
 
 import cn.hutool.core.util.IdUtil;
+import com.tencent.wxcloudrun.entity.Result;
+import com.tencent.wxcloudrun.form.FurnitureOrderForm;
 import com.tencent.wxcloudrun.service.WxPayService;
+import com.tencent.wxcloudrun.vo.WxPrepayRes;
+import com.wechat.pay.java.service.payments.jsapi.model.PrepayWithRequestPaymentResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import com.tencent.wxcloudrun.service.FurnitureorderService;
-import com.tencent.wxcloudrun.entity.Furnitureorder;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -27,12 +26,11 @@ import javax.servlet.http.HttpServletRequest;
 public class FurnitureorderController {
 
     private final FurnitureorderService furnitureorderService;
-    private final WxPayService wxPayService;
+
 
     @PostMapping(value = "/createOrder")
-    public void  createOrder (HttpServletRequest request){
-        String orderId = IdUtil.getSnowflake().nextIdStr();
-        wxPayService.createWxPayOrder(request,orderId);
+    public Result<PrepayWithRequestPaymentResponse> createOrder (@RequestBody FurnitureOrderForm form, HttpServletRequest request){
+        return furnitureorderService.createOrder(form,request);
     }
 
 }

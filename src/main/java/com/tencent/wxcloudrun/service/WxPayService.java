@@ -1,7 +1,9 @@
 package com.tencent.wxcloudrun.service;
 
+import com.wechat.pay.java.service.payments.jsapi.model.PrepayWithRequestPaymentResponse;
+
 import javax.servlet.http.HttpServletRequest;
 
 public interface WxPayService {
-    void createWxPayOrder(HttpServletRequest request,String orderId);
+    PrepayWithRequestPaymentResponse createWxPayOrder(HttpServletRequest request, String orderId);
 }
