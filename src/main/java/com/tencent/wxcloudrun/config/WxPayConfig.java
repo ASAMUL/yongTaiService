@@ -1,6 +1,7 @@
 package com.tencent.wxcloudrun.config;
 
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.wechat.pay.java.core.RSAAutoCertificateConfig;
 import com.wechat.pay.java.core.exception.HttpException;
@@ -12,10 +13,23 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 @Component
@@ -114,5 +128,51 @@ public class WxPayConfig {
 
     public String getNotifyUrl() {
         return notifyUrl;
+    }
+
+    public Boolean notifyExecute(JSONObject jsonObject, Consumer<String> consumer) {
+        String outTradeNo ="";
+        try {
+            String json = jsonObject.toString();
+            String associatedData = (String) JSONUtil.getByPath(JSONUtil.parse(json), "resource.associated_data");
+            String ciphertext =(String ) JSONUtil.getByPath(JSONUtil.parse(json), "resource.ciphertext");
+            String nonce =(String ) JSONUtil.getByPath(JSONUtil.parse(json), "resource.nonce");
+            // 解密
+            String decrypt =  decryptToString(associatedData.getBytes(StandardCharsets.UTF_8), nonce.getBytes(StandardCharsets.UTF_8),ciphertext);
+            // 验证签名
+            JSONObject decryptObj  = JSONUtil.parseObj(decrypt);
+            if ("SUCCESS".equals(decryptObj.getStr("trade_state"))) {
+                outTradeNo = decryptObj.getStr("out_trade_no");
+                log.info("商户订单号：{}，支付成功，开始执行业务逻辑", outTradeNo);
+                try {
+                    consumer.accept(outTradeNo);
+                } catch (Exception e) {
+                    log.error("商户订单号：{}，执行业务逻辑异常", outTradeNo, e);
+                    return Boolean.FALSE;
+                }
+
+            }
+        } catch (Exception e) {
+            log.error("支付回调参数：{}，支付回调异常",jsonObject.toString() , e);
+            return Boolean.FALSE;
+        }
+        log.info("支付回调参数：{}，支付回调成功", jsonObject);
+        return Boolean.TRUE;
+    }
+
+    private String decryptToString(byte[] associatedData, byte[] nonce, String ciphertext) throws GeneralSecurityException,IOException {
+        try {
+            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+            SecretKeySpec key = new SecretKeySpec(apiV3Key.getBytes(StandardCharsets.UTF_8), "AES");
+            GCMParameterSpec spec = new GCMParameterSpec(128, nonce);
+            cipher.init(Cipher.DECRYPT_MODE, key, spec);
+            cipher.updateAAD(associatedData);
+            return new String(cipher.doFinal(Base64.getDecoder().decode(ciphertext)), StandardCharsets.UTF_8);
+
+        } catch (NoSuchPaddingException | NoSuchAlgorithmException e) {
+           throw new IllegalStateException(e);
+        }  catch (InvalidAlgorithmParameterException | InvalidKeyException e) {
+           throw new IllegalArgumentException(e);
+        }
     }
 }
