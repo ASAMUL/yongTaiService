@@ -16,10 +16,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.security.PrivateKey;
 import java.util.function.Supplier;
@@ -42,13 +39,32 @@ public class WxPayConfig {
             synchronized (this) {
                 if (ObjectUtil.isNull(config)) {
                     Resource resource = new ClassPathResource("apiclient_key.pem");
+                    InputStream inputStream = null;
+                    OutputStream outputStream = null;
                     try {
 
-                        File file = resource.getFile();
-                        FileUtil.copy(file, new File(FILE_PATH),true);
+                        inputStream = resource.getInputStream();
+                        outputStream = new FileOutputStream(FILE_PATH);
+                        byte[] buffer = new byte[1024];
+                        int len = 0;
+                        while ((len = inputStream.read(buffer)) != -1) {
+                            outputStream.write(buffer, 0, len);
+                        }
+                        outputStream.flush();
                     } catch (IOException e) {
                         log.error("获取微信支付配置异常", e);
                         throw new RuntimeException("获取微信支付配置异常");
+                    } finally {
+                        try {
+                            if (inputStream != null) {
+                                inputStream.close();
+                            }
+                            if (outputStream != null) {
+                                outputStream.close();
+                            }
+                        } catch (IOException e) {
+                            log.error("关闭文件流异常", e);
+                        }
                     }
                     config =  new RSAAutoCertificateConfig.Builder()
                             .merchantId(mchId)
