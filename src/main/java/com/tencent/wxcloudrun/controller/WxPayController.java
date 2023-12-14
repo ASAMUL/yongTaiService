@@ -8,6 +8,7 @@ import com.tencent.wxcloudrun.service.FurnitureorderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,7 +24,7 @@ public class WxPayController {
     public final WxPayConfig wxPayConfig;
     public final FurnitureorderService furnitureorderService;
     @PostMapping(value = "/callBack")
-    public Map<String,String> callBack(JSONObject jsonObject) {
+    public Map<String,String> callBack(@RequestBody JSONObject jsonObject) {
         log.info("微信支付回调");
         Boolean result = wxPayConfig.notifyExecute(jsonObject,orderNo -> {
             Furnitureorder one = furnitureorderService.lambdaQuery()
