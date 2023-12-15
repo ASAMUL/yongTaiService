@@ -1,18 +1,23 @@
 package com.tencent.wxcloudrun.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.tencent.wxcloudrun.config.UserContextHolder;
 import com.tencent.wxcloudrun.entity.Cart;
 import com.tencent.wxcloudrun.dao.CartMapper;
 import com.tencent.wxcloudrun.entity.Result;
 import com.tencent.wxcloudrun.form.CartForm;
+import com.tencent.wxcloudrun.form.FurnitureAccessoryForm;
 import com.tencent.wxcloudrun.service.CartService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.tencent.wxcloudrun.vo.CartVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -29,7 +34,10 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements Ca
     @Override
     public Result<String> addCart(CartForm form) {
         log.info("添加购物车:{}" , JSONUtil.toJsonStr(form));
-        Cart cart = BeanUtil.copyProperties(form, Cart.class);
+        Cart cart = BeanUtil.copyProperties(form, Cart.class,"publicAccessoryList");
+        if (CollUtil.isNotEmpty(form.getPublicAccessoryList())) {
+            cart.setPublicAccessoryList(JSONUtil.toJsonStr(form.getPublicAccessoryList()));
+        }
         cart.setUserId(UserContextHolder.getUserId());
         boolean save = this.save(cart);
         if (!save) {
@@ -39,9 +47,20 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements Ca
     }
 
     @Override
-    public Result<List<Cart>> getCart() {
+    public Result<List<CartVO>> getCart() {
         log.info("获取购物车,当前用户:{}", UserContextHolder.getUserId());
         List<Cart> list = this.lambdaQuery().eq(Cart::getUserId, UserContextHolder.getUserId()).list();
-        return Result.OK(list);
+        // 转换配件
+        List<CartVO> cartVos = list.stream()
+                .map(cart -> {
+                    CartVO vo = BeanUtil.copyProperties(cart, CartVO.class, "publicAccessoryList");
+                    if (StrUtil.isNotBlank(cart.getPublicAccessoryList())) {
+                        List<FurnitureAccessoryForm> publicAccessoryList = JSONUtil.toList(JSONUtil.parseArray(cart.getPublicAccessoryList()), FurnitureAccessoryForm.class);
+                        vo.setPublicAccessoryList(publicAccessoryList);
+                    }
+                    return vo;
+                })
+                .collect(Collectors.toList());
+        return Result.OK(cartVos);
     }
 }

@@ -1,20 +1,29 @@
-package com.tencent.wxcloudrun.form;
+package com.tencent.wxcloudrun.vo;
 
-import com.tencent.wxcloudrun.entity.Furniture;
-import com.tencent.wxcloudrun.vo.FurnitureAccessoryVO;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.tencent.wxcloudrun.form.FurnitureAccessoryForm;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 @Data
-public class CartForm {
+public class CartVO {
+
+    private static final long serialVersionUID = 1L;
+
     /**
      * 家具id
      */
 
     private Integer fid;
 
+    private Integer id;
+
+
+    private Integer userId;
     /**
      * 价格
      */

@@ -4,6 +4,7 @@ import com.tencent.wxcloudrun.entity.Cart;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.tencent.wxcloudrun.entity.Result;
 import com.tencent.wxcloudrun.form.CartForm;
+import com.tencent.wxcloudrun.vo.CartVO;
 
 import java.util.List;
 
@@ -27,5 +28,5 @@ public interface CartService extends IService<Cart> {
      * 获取购物车
      * @return 购物车列表
      */
-    Result<List<Cart>> getCart();
+    Result<List<CartVO>> getCart();
 }

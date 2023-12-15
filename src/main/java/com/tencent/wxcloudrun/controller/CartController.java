@@ -4,6 +4,7 @@ import com.tencent.wxcloudrun.entity.Cart;
 import com.tencent.wxcloudrun.entity.Result;
 import com.tencent.wxcloudrun.form.CartForm;
 import com.tencent.wxcloudrun.service.CartService;
+import com.tencent.wxcloudrun.vo.CartVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +28,7 @@ public class CartController {
         return cartService.addCart(form);
     }
     @GetMapping
-    public Result<List<Cart>> getCart() {
+    public Result<List<CartVO>> getCart() {
         return cartService.getCart();
     }
     @PostMapping("/delete")
