@@ -5,6 +5,7 @@ import com.tencent.wxcloudrun.entity.Furnitureorder;
 import com.tencent.wxcloudrun.entity.Result;
 import com.tencent.wxcloudrun.form.FurnitureOrderForm;
 import com.tencent.wxcloudrun.service.WxPayService;
+import com.tencent.wxcloudrun.vo.FurnitureOrderVO;
 import com.tencent.wxcloudrun.vo.WxPrepayRes;
 import com.wechat.pay.java.service.payments.jsapi.model.PrepayWithRequestPaymentResponse;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class FurnitureorderController {
         return furnitureorderService.createOrder(form,request);
     }
     @GetMapping(value = "/queryOrderByStatus")
-    public Result<List<Furnitureorder>> queryOrderByStatus(@RequestParam("status") String status){
+    public Result<List<FurnitureOrderVO>> queryOrderByStatus(@RequestParam("status") String status){
         return furnitureorderService.queryOrderByStatus(status);
     }
 
