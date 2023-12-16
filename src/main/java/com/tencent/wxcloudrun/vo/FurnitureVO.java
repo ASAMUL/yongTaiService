@@ -18,6 +18,7 @@ public class FurnitureVO {
      */
 
     private String FName;
+    private String FAName;
 
     /**
      * 家具出厂编号

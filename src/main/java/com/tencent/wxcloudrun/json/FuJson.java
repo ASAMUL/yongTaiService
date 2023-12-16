@@ -10,6 +10,7 @@ public class FuJson {
     private String fuImg;
     private String fuNumber;
     private String fuName;
+    private String faName;
     private String faId;
     private List<FaListJson> faList;
 }

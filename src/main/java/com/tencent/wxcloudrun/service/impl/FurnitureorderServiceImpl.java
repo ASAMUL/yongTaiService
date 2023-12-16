@@ -11,6 +11,7 @@ import com.tencent.wxcloudrun.dao.FurnitureorderMapper;
 import com.tencent.wxcloudrun.entity.Result;
 import com.tencent.wxcloudrun.form.FurnitureOrderForm;
 import com.tencent.wxcloudrun.json.FuJson;
+import com.tencent.wxcloudrun.service.CartService;
 import com.tencent.wxcloudrun.service.FurnitureService;
 import com.tencent.wxcloudrun.service.FurnitureorderService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -40,6 +41,7 @@ import java.util.List;
 public class FurnitureorderServiceImpl extends ServiceImpl<FurnitureorderMapper, Furnitureorder> implements FurnitureorderService {
     public final WxPayService wxPayService;
     public final FurnitureService furnitureService;
+    public final CartService cartService;
     @Override
     public Result<PrepayWithRequestPaymentResponse> createOrder(FurnitureOrderForm form, HttpServletRequest request) {
         log.info("创建订单,form:{}", JSONUtil.toJsonStr(form));
@@ -66,6 +68,10 @@ public class FurnitureorderServiceImpl extends ServiceImpl<FurnitureorderMapper,
                 .build();
         boolean save = this.save(furnitureorder);
         if (save) {
+            if (CollUtil.isNotEmpty(form.getCartIdList())) {
+                log.info("删除购物车分支");
+                cartService.removeBatchByIds(form.getCartIdList());
+            }
             PrepayWithRequestPaymentResponse wxPayOrder = wxPayService.createWxPayOrder(request, orderNo,form.getFoDiscountPrice());
             return Result.OK(wxPayOrder);
         }else {

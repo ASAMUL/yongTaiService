@@ -14,6 +14,7 @@ public class FurnitureOrderForm {
     private String foBalance;
     private String foPayType;
     private String focId;
+    private List<Integer> cartIdList;
     private String focTel;
     private String focTdAddress;
     private String focTdWay;

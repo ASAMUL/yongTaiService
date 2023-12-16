@@ -43,6 +43,8 @@ public class FurnitureController {
     public Result<FurnitureVO> getById(@PathVariable("id") String id) {
         Furniture byId = furnitureService.getById(id);
         FurnitureVO vo = BeanUtil.copyProperties(byId, FurnitureVO.class);
+        Furnitureaccessory fa = furnitureaccessoryService.getById(byId.getFAId());
+        vo.setFAName(fa.getFAName());
         // 获取配件
         List<FurnitureAccessoryVO> accessories = furnitureaccessoryService.queryByFurnitureId(byId.getFAId());
         vo.setFurnitureAccessoryList(accessories);
