@@ -1,10 +1,13 @@
 package com.tencent.wxcloudrun.entity;
+
 import com.baomidou.mybatisplus.annotation.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.Date;
 import java.io.Serializable;
-
-import lombok.*;
+import java.util.Date;
 
 /**
  * <p>
@@ -31,6 +34,16 @@ public class User implements Serializable {
      */
     @TableField("UserName")
     private String UserName;
+    /**
+     * 对应上级用户id
+     */
+    @TableField("userParentId")
+    private Integer userParentId;
+    /**
+     * 用户的邀请码
+     */
+    @TableField("userInviteCode")
+    private String userInviteCode;
 
     /**
      * 用户密码
@@ -89,25 +102,25 @@ public class User implements Serializable {
     /**
      * 创建时间
      */
-    @TableField(value = "CreateTime",fill = FieldFill.INSERT )
+    @TableField(value = "CreateTime", fill = FieldFill.INSERT)
     private Date CreateTime;
 
     /**
      * 创建用户id
      */
-    @TableField(value = "CreateUser",fill = FieldFill.INSERT)
+    @TableField(value = "CreateUser", fill = FieldFill.INSERT)
     private String CreateUser;
 
     /**
      * 更新时间
      */
-    @TableField(value = "UpdateTime",fill = FieldFill.INSERT_UPDATE )
+    @TableField(value = "UpdateTime", fill = FieldFill.INSERT_UPDATE)
     private Date UpdateTime;
 
     /**
      * 更新用户id
      */
-    @TableField(value = "UpdateUser",fill = FieldFill.INSERT_UPDATE)
+    @TableField(value = "UpdateUser", fill = FieldFill.INSERT_UPDATE)
     private String UpdateUser;
 
     /**

@@ -1,13 +1,17 @@
 package com.tencent.wxcloudrun.service.impl;
 
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
+import com.tencent.wxcloudrun.entity.Result;
 import com.tencent.wxcloudrun.entity.User;
 import com.tencent.wxcloudrun.dao.UserMapper;
 import com.tencent.wxcloudrun.form.UserForm;
 import com.tencent.wxcloudrun.service.UserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tencent.wxcloudrun.utils.AESUtil;
+import com.tencent.wxcloudrun.vo.UserInfoVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +32,7 @@ import static com.tencent.wxcloudrun.constants.WeChatConstants.OPEN_ID;
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
     @Override
-    public void loginByWechat(HttpServletRequest request, UserForm userForm) {
+    public Result<UserInfoVO> loginByWechat(HttpServletRequest request, UserForm userForm) {
         log.info("微信登录, userForm:{}", JSONUtil.toJsonStr(userForm));
         String openId = request.getHeader(OPEN_ID);
         log.info("openId:{}", openId);
@@ -37,8 +41,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .eq(User::getWeixinOpenid, AESUtil.encrypt(openId))
                 .one();
         if (ObjectUtil.isNotNull(user)) {
-            return;
+            if (StrUtil.isNotBlank(userForm.getInvitationCode())) {
+                if (user.getUserParentId() == null) {
+                    User parentUser = getUserByInviteCode(userForm.getInvitationCode());
+                    if (ObjectUtil.isNotNull(parentUser)) {
+                        user.setUserParentId(parentUser.getUserId());
+                        this.updateById(user);
+                    }
+                }
+            }
+            return Result.OK(creatUserInfo(user));
         }
+
         // 不存在则创建
         user = User.builder()
                .weixinOpenid(AESUtil.encrypt(openId))
@@ -48,7 +62,28 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                // 普通用户
                .UserType(1)
                .build();
+        if (StrUtil.isNotBlank(userForm.getInvitationCode())) {
+            User parentUser = getUserByInviteCode(userForm.getInvitationCode());
+            if (ObjectUtil.isNotNull(parentUser)) {
+                user.setUserParentId(parentUser.getUserId());
+            }
+        }
+         user.setUserInviteCode("WTX"+ user.getUserId());
          this.save(user);
+         return Result.OK(creatUserInfo(user));
 
+    }
+    private User getUserByInviteCode(String invitationCode) {
+        return this.lambdaQuery()
+                .eq(User::getUserInviteCode, invitationCode)
+                .one();
+    }
+    private UserInfoVO creatUserInfo(User user) {
+        return UserInfoVO.builder()
+                .avatarUrl(user.getAvatar())
+                .userId(Convert.toStr(user.getUserId()))
+                .nickName(user.getNickName())
+                .token(user.getWeixinOpenid())
+                .build();
     }
 }

@@ -1,7 +1,9 @@
 package com.tencent.wxcloudrun.controller;
 
+import com.tencent.wxcloudrun.entity.Result;
 import com.tencent.wxcloudrun.form.UserForm;
 import com.tencent.wxcloudrun.service.UserService;
+import com.tencent.wxcloudrun.vo.UserInfoVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +24,7 @@ public class LoginController {
      * 微信登录
      */
     @PostMapping("/wechat")
-    public void loginByWechat(HttpServletRequest request, @RequestBody UserForm userForm) {
-        userService.loginByWechat(request, userForm);
+    public Result<UserInfoVO> loginByWechat(HttpServletRequest request, @RequestBody UserForm userForm) {
+       return userService.loginByWechat(request, userForm);
     }
 }

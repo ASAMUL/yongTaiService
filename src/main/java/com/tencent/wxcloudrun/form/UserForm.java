@@ -9,5 +9,6 @@ public class UserForm {
     private String openId;
     private String weiXinSessionKey;
     private String gender;
+    private String invitationCode;
 
 }

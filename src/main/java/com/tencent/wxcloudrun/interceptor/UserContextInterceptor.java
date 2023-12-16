@@ -16,12 +16,14 @@ import static com.tencent.wxcloudrun.constants.WeChatConstants.OPEN_ID;
 @Component
 public class UserContextInterceptor implements HandlerInterceptor {
     @Autowired
-    private UserService userService; // 假设这是您的服务类
+    private UserService userService;
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String openId = request.getHeader(OPEN_ID);
         if (openId != null) {
-            // 假设 getUserByOpenId 方法返回用户 ID
+            if (UserContextHolder.getUserId() != null) {
+                return true;
+            }
             Integer userId = userService.lambdaQuery()
                             .eq(User::getWeixinOpenid, AESUtil.encrypt(openId))
                             .one().getUserId();
