@@ -18,4 +18,10 @@ public interface OrderConstants {
      * 订单状态：已完成
       */
     String ORDER_STATUS_FINISH = "3";
+
+    /**
+     * 收货状态：待收货
+     */
+    String ORDER_RECEIVE_STATUS_WAIT = "4";
+
 }

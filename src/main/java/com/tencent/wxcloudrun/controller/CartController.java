@@ -1,6 +1,5 @@
 package com.tencent.wxcloudrun.controller;
 
-import com.tencent.wxcloudrun.entity.Cart;
 import com.tencent.wxcloudrun.entity.Result;
 import com.tencent.wxcloudrun.form.CartForm;
 import com.tencent.wxcloudrun.service.CartService;
@@ -32,7 +31,7 @@ public class CartController {
         return cartService.getCart();
     }
     @PostMapping("/delete")
-    public Result<String> deleteCart(List<Integer> ids) {
+    public Result<String> deleteCart(@RequestBody List<Integer> ids) {
         boolean b = cartService.removeBatchByIds(ids);
         return Result.OK("删除成功");
     }

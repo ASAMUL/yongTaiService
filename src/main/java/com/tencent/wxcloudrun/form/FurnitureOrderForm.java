@@ -1,6 +1,9 @@
 package com.tencent.wxcloudrun.form;
 
+import com.tencent.wxcloudrun.json.FuJson;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class FurnitureOrderForm {
@@ -15,5 +18,7 @@ public class FurnitureOrderForm {
     private String focTdAddress;
     private String focTdWay;
     private String foRemark;
+    private String foNumber;
+    private List<FuJson> fuJson;
 
 }

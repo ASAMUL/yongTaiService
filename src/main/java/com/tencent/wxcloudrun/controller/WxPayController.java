@@ -30,7 +30,7 @@ public class WxPayController {
                     .eq(Furnitureorder::getFONo, orderNo)
                     .one();
             one.setFOPayStatus(OrderConstants.ORDER_STATUS_PAYED);
-            one.setFOStatus(OrderConstants.ORDER_STATUS_FINISH);
+            one.setFOStatus(OrderConstants.ORDER_STATUS_PAYED);
             furnitureorderService.updateById(one);
         });
         Map<String,String> res = new HashMap<>(2);

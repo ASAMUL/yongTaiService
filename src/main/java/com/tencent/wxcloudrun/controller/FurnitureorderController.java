@@ -1,6 +1,7 @@
 package com.tencent.wxcloudrun.controller;
 
 import cn.hutool.core.util.IdUtil;
+import com.tencent.wxcloudrun.entity.Furnitureorder;
 import com.tencent.wxcloudrun.entity.Result;
 import com.tencent.wxcloudrun.form.FurnitureOrderForm;
 import com.tencent.wxcloudrun.service.WxPayService;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import com.tencent.wxcloudrun.service.FurnitureorderService;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * <p>
@@ -31,6 +33,10 @@ public class FurnitureorderController {
     @PostMapping(value = "/createOrder")
     public Result<PrepayWithRequestPaymentResponse> createOrder (@RequestBody FurnitureOrderForm form, HttpServletRequest request){
         return furnitureorderService.createOrder(form,request);
+    }
+    @GetMapping(value = "/queryOrderByStatus")
+    public Result<List<Furnitureorder>> queryOrderByStatus(@RequestParam("status") String status){
+        return furnitureorderService.queryOrderByStatus(status);
     }
 
 }

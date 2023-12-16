@@ -27,7 +27,10 @@ public class Furnitureorder implements Serializable {
 
     @TableId(value = "FOId", type = IdType.AUTO)
     private Integer FOId;
-
+    @TableField("FONumber")
+    private String FONumber;
+    @TableField("fuJson")
+    private String fuJson;
     /**
      * 订单编号
      */
@@ -50,7 +53,7 @@ public class Furnitureorder implements Serializable {
      * 订单购买家具编号
      */
     @TableField("FOFId")
-    private Integer FOFId;
+    private String FOFId;
 
     /**
      * 订单购买配件编号

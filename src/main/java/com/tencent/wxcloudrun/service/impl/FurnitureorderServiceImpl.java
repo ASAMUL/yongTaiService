@@ -1,16 +1,21 @@
 package com.tencent.wxcloudrun.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.json.JSONUtil;
 import com.tencent.wxcloudrun.config.UserContextHolder;
+import com.tencent.wxcloudrun.entity.Furniture;
 import com.tencent.wxcloudrun.entity.Furnitureorder;
 import com.tencent.wxcloudrun.dao.FurnitureorderMapper;
 import com.tencent.wxcloudrun.entity.Result;
 import com.tencent.wxcloudrun.form.FurnitureOrderForm;
+import com.tencent.wxcloudrun.json.FuJson;
+import com.tencent.wxcloudrun.service.FurnitureService;
 import com.tencent.wxcloudrun.service.FurnitureorderService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tencent.wxcloudrun.service.WxPayService;
+import com.tencent.wxcloudrun.vo.FurnitureOrderVO;
 import com.tencent.wxcloudrun.vo.WxPrepayRes;
 import com.wechat.pay.java.service.payments.jsapi.model.PrepayWithRequestPaymentResponse;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import com.tencent.wxcloudrun.constants.OrderConstants;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>
@@ -32,6 +39,7 @@ import javax.servlet.http.HttpServletRequest;
 @RequiredArgsConstructor
 public class FurnitureorderServiceImpl extends ServiceImpl<FurnitureorderMapper, Furnitureorder> implements FurnitureorderService {
     public final WxPayService wxPayService;
+    public final FurnitureService furnitureService;
     @Override
     public Result<PrepayWithRequestPaymentResponse> createOrder(FurnitureOrderForm form, HttpServletRequest request) {
         log.info("创建订单,form:{}", JSONUtil.toJsonStr(form));
@@ -41,11 +49,12 @@ public class FurnitureorderServiceImpl extends ServiceImpl<FurnitureorderMapper,
                 .FOCTDAddress(form.getFocTdAddress())
                 .FOPrice(Convert.toBigDecimal(form.getFoPrice()))
                 .FOFAId(form.getFofaId())
-                .FOFId(Convert.toInt(form.getFofId()))
+                .FOFId((form.getFofId()))
                 .FODiscountPrice(Convert.toBigDecimal(form.getFoDiscountPrice()))
                 .FOPayType(form.getFoPayType())
                 .FORemark(form.getFoRemark())
                 .FOCTDWay(form.getFocTdWay())
+                .fuJson(JSONUtil.toJsonStr(form.getFuJson()))
                 .FOCTel(form.getFocTel())
                 .FONo(orderNo)
                 .FOCId(UserContextHolder.getUserId())
@@ -53,6 +62,7 @@ public class FurnitureorderServiceImpl extends ServiceImpl<FurnitureorderMapper,
                 .FOStatus(OrderConstants.ORDER_STATUS_WAIT_PAY)
                 // 支付状态
                 .FOPayStatus(OrderConstants.ORDER_STATUS_WAIT_PAY)
+                .IsDeleted("0")
                 .build();
         boolean save = this.save(furnitureorder);
         if (save) {
@@ -62,5 +72,44 @@ public class FurnitureorderServiceImpl extends ServiceImpl<FurnitureorderMapper,
             throw new RuntimeException("创建订单失败");
         }
 
+    }
+
+    @Override
+    public Result<List<FurnitureOrderVO>> queryOrderByStatus(String status) {
+        log.info("查询订单,状态:{}", status);
+        if (status.equals(OrderConstants.ORDER_RECEIVE_STATUS_WAIT)) {
+            log.info("进入待收货状态分支");
+            List<Furnitureorder> list = this.lambdaQuery()
+                    .eq(Furnitureorder::getFOCId, UserContextHolder.getUserId())
+                    .eq(Furnitureorder::getFOPayStatus, OrderConstants.ORDER_STATUS_PAYED)
+                    .eq(Furnitureorder::getFOStatus, OrderConstants.ORDER_STATUS_PAYED)
+                    .eq(Furnitureorder::getIsDeleted, "0")
+                    .list();
+            List<FurnitureOrderVO> furnitureOrderVos = CollUtil.newArrayList();
+            list.forEach(furnitureorder -> {
+                FurnitureOrderVO furnitureOrderVO = FurnitureOrderVO.builder()
+                        .FONo(furnitureorder.getFONo())
+                        .furnitureList(JSONUtil.toList(furnitureorder.getFuJson(), FuJson.class))
+                        .build();
+                furnitureOrderVos.add(furnitureOrderVO);
+            });
+            return Result.OK(furnitureOrderVos);
+        } else  {
+            log.info("进入已完成状态分支");
+            List<Furnitureorder> list = this.lambdaQuery()
+                    .eq(Furnitureorder::getFOCId, UserContextHolder.getUserId())
+                    .eq(Furnitureorder::getFOStatus, OrderConstants.ORDER_STATUS_FINISH)
+                    .eq(Furnitureorder::getIsDeleted, "0")
+                    .list();
+            List<FurnitureOrderVO> furnitureOrderVos = CollUtil.newArrayList();
+            list.forEach(furnitureorder -> {
+                FurnitureOrderVO furnitureOrderVO = FurnitureOrderVO.builder()
+                        .FONo(furnitureorder.getFONo())
+                        .furnitureList(JSONUtil.toList(furnitureorder.getFuJson(), FuJson.class))
+                        .build();
+                furnitureOrderVos.add(furnitureOrderVO);
+            });
+            return Result.OK(furnitureOrderVos);
+        }
     }
 }
