@@ -56,7 +56,7 @@ public class FurnitureorderServiceImpl extends ServiceImpl<FurnitureorderMapper,
                 .build();
         boolean save = this.save(furnitureorder);
         if (save) {
-            PrepayWithRequestPaymentResponse wxPayOrder = wxPayService.createWxPayOrder(request, orderNo);
+            PrepayWithRequestPaymentResponse wxPayOrder = wxPayService.createWxPayOrder(request, orderNo,form.getFoDiscountPrice());
             return Result.OK(wxPayOrder);
         }else {
             throw new RuntimeException("创建订单失败");
