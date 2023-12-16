@@ -77,7 +77,7 @@ public class FurnitureorderServiceImpl extends ServiceImpl<FurnitureorderMapper,
     @Override
     public Result<List<FurnitureOrderVO>> queryOrderByStatus(String status) {
         log.info("查询订单,状态:{}", status);
-        if (status.equals(OrderConstants.ORDER_RECEIVE_STATUS_WAIT)) {
+        if (status.equals(OrderConstants.ORDER_STATUS_PAYED)) {
             log.info("进入待收货状态分支");
             List<Furnitureorder> list = this.lambdaQuery()
                     .eq(Furnitureorder::getFOCId, UserContextHolder.getUserId())
