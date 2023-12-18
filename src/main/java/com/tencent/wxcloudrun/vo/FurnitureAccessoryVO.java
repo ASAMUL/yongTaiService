@@ -43,7 +43,7 @@ public class FurnitureAccessoryVO {
      * 是否为公共配件
      */
 
-    private Boolean IsPublic;
+    private String IsPublic;
 
     /**
      * 床的尺寸（只适用于床架配件筛选搭配）

@@ -4,19 +4,24 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.StrUtil;
+import com.tencent.wxcloudrun.dao.FurnitureaccessoryMapper;
 import com.tencent.wxcloudrun.entity.Furniture;
 import com.tencent.wxcloudrun.dao.FurnitureMapper;
 import com.tencent.wxcloudrun.entity.FurnitureType;
+import com.tencent.wxcloudrun.entity.Furnitureaccessory;
 import com.tencent.wxcloudrun.entity.Result;
 import com.tencent.wxcloudrun.service.FurnitureService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.tencent.wxcloudrun.service.FurnitureaccessoryService;
 import com.tencent.wxcloudrun.service.FurnituretypeService;
+import com.tencent.wxcloudrun.vo.FurnitureAccessoryVO;
 import com.tencent.wxcloudrun.vo.FurnitureVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,6 +39,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture> implements FurnitureService {
     private final FurnituretypeService furnituretypeService;
+    private final FurnitureaccessoryService furnitureaccessoryService;
+    private final FurnitureaccessoryMapper furnitureaccessoryMapper;
     @Override
     public Result<List<FurnitureVO>> queryFurnitureByType(String type,String isParent) {
         log.info("根据类型查询家具开始====》,type:{},isParent:{}",type,isParent);
@@ -61,9 +68,31 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
         if (CollUtil.isEmpty(list)){
             return Result.OK(Collections.emptyList());
         }
+        // 查询配件名称
+        List<String> typeIds = new ArrayList<>();
+        list.forEach(item -> {
+            if (StrUtil.isNotBlank(item.getFAId())) {
+                String[] split = item.getFAId().split(",");
+                typeIds.addAll(Arrays.asList(split));
+            }
+        });
+        // 查询公共配件
+
+        List<FurnitureAccessoryVO> accessories = furnitureaccessoryMapper.queryByFurnitureIds(typeIds);
         List<FurnitureVO> collect = list.stream()
                 .map(item -> BeanUtil.copyProperties(item, FurnitureVO.class))
                 .collect(Collectors.toList());
+        if (CollUtil.isNotEmpty(accessories)){
+            collect.forEach(item -> {
+                List<FurnitureAccessoryVO> r = accessories.stream()
+                        .filter(accessory -> {
+                            String[] split = item.getFAId().split(",");
+                            return Arrays.asList(split).contains(Convert.toStr(accessory.getFAId())) || "1".equals(accessory.getIsPublic());
+                        })
+                        .collect(Collectors.toList());
+                item.setFurnitureAccessoryList(r);
+            });
+        }
         return Result.OK(collect);
     }
 
@@ -77,9 +106,30 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
         if (CollUtil.isEmpty(list)){
             return Result.OK(Collections.emptyList());
         }
+        // 查询配件名称
+        List<String> typeIds = new ArrayList<>();
+        list.forEach(item -> {
+            if (StrUtil.isNotBlank(item.getFAId())) {
+                String[] split = item.getFAId().split(",");
+                typeIds.addAll(Arrays.asList(split));
+            }
+        });
+        // 查询公共配件
+        List<FurnitureAccessoryVO> accessories = furnitureaccessoryMapper.queryByFurnitureIds(typeIds);
         List<FurnitureVO> collect = list.stream()
                 .map(item -> BeanUtil.copyProperties(item, FurnitureVO.class))
                 .collect(Collectors.toList());
+        if (CollUtil.isNotEmpty(accessories)){
+            collect.forEach(item -> {
+                List<FurnitureAccessoryVO> r = accessories.stream()
+                        .filter(accessory -> {
+                            String[] split = item.getFAId().split(",");
+                            return Arrays.asList(split).contains(Convert.toStr(accessory.getFAId())) || "1".equals(accessory.getIsPublic());
+                        })
+                        .collect(Collectors.toList());
+                item.setFurnitureAccessoryList(r);
+            });
+        }
         return Result.OK(collect);
     }
 }

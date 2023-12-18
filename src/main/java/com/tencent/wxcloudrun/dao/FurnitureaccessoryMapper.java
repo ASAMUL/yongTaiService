@@ -2,6 +2,10 @@ package com.tencent.wxcloudrun.dao;
 
 import com.tencent.wxcloudrun.entity.Furnitureaccessory;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.tencent.wxcloudrun.vo.FurnitureAccessoryVO;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +17,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface FurnitureaccessoryMapper extends BaseMapper<Furnitureaccessory> {
 
+    List<FurnitureAccessoryVO> queryByFurnitureIds(@Param("ids") List<String> ids);
 }

@@ -22,4 +22,21 @@
         <result column="UpdateUser" property="UpdateUser" />
         <result column="IsDeleted" property="IsDeleted" />
     </resultMap>
+
+    <select id="queryByFurnitureIds" resultType="com.tencent.wxcloudrun.vo.FurnitureAccessoryVO">
+        <if test="ids != null and ids.size() > 0">
+            SELECT *
+            FROM FurnitureAccessory fa
+            WHERE fa.FAId IN
+            <foreach collection="ids" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
+            UNION
+        </if>
+
+        SELECT *
+        FROM FurnitureAccessory pfa
+        WHERE pfa.IsPublic = 1 and pfa.IsDeleted = 0
+
+    </select>
 </mapper>
