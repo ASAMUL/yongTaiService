@@ -83,6 +83,24 @@ public class FurnitureorderServiceImpl extends ServiceImpl<FurnitureorderMapper,
     @Override
     public Result<List<FurnitureOrderVO>> queryOrderByStatus(String status) {
         log.info("查询订单,状态:{}", status);
+        // 如果是0 查询所有订单
+        if ("0".equals(status)) {
+            log.info("进入所有订单分支");
+            List<Furnitureorder> list = this.lambdaQuery()
+                    .eq(Furnitureorder::getFOCId, UserContextHolder.getUserId())
+                    .eq(Furnitureorder::getIsDeleted, "0")
+                    .list();
+            List<FurnitureOrderVO> furnitureOrderVos = CollUtil.newArrayList();
+            list.forEach(furnitureorder -> {
+                FurnitureOrderVO furnitureOrderVO = FurnitureOrderVO.builder()
+                        .FONo(furnitureorder.getFONo())
+                        .foPrice(furnitureorder.getFOPrice())
+                        .furnitureList(JSONUtil.toList(furnitureorder.getFuJson(), FuJson.class))
+                        .build();
+                furnitureOrderVos.add(furnitureOrderVO);
+            });
+            return Result.OK(furnitureOrderVos);
+        }
         if (status.equals(OrderConstants.ORDER_STATUS_PAYED)) {
             log.info("进入待收货状态分支");
             List<Furnitureorder> list = this.lambdaQuery()
