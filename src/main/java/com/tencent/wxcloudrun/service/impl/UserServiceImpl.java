@@ -84,13 +84,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         User parentUser = getUserByInviteCode(invitationCode);
         if (ObjectUtil.isNotNull(parentUser)) {
+            if (ObjectUtil.equal(one.getUserId(),parentUser.getUserId())) {
+                return Result.OK("不能绑定自己的邀请码");
+            }
             one.setUserParentId(parentUser.getUserId());
             this.updateById(one);
-
+            return Result.OK("绑定成功");
         }else  {
             return Result.OK("邀请码不存在");
         }
-        return Result.OK("绑定成功");
+
     }
 
     private User getUserByInviteCode(String invitationCode) {
