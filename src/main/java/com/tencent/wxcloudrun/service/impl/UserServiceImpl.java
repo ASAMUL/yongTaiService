@@ -73,6 +73,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
          return Result.OK(creatUserInfo(user));
 
     }
+
+    @Override
+    public Result<String> updateInvitationCode(HttpServletRequest request,String invitationCode) {
+        User one = this.lambdaQuery()
+                .eq(User::getWeixinOpenid, AESUtil.encrypt(request.getHeader(OPEN_ID)))
+                .one();
+        if (one.getUserParentId() != null ) {
+            return Result.OK("已经绑定过邀请码");
+        }
+        User parentUser = getUserByInviteCode(invitationCode);
+        if (ObjectUtil.isNotNull(parentUser)) {
+            one.setUserParentId(parentUser.getUserId());
+            this.updateById(one);
+
+        }
+        return Result.OK("绑定成功");
+    }
+
     private User getUserByInviteCode(String invitationCode) {
         return this.lambdaQuery()
                 .eq(User::getUserInviteCode, invitationCode)

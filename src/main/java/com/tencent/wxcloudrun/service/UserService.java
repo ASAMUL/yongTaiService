@@ -23,4 +23,11 @@ public interface UserService extends IService<User> {
      * @param userForm 用户表单
      */
     Result<UserInfoVO> loginByWechat(HttpServletRequest request, UserForm userForm);
+
+    /**
+     *
+     * @param invitationCode 邀请码
+     * @return
+     */
+    Result<String> updateInvitationCode(HttpServletRequest request,String invitationCode);
 }

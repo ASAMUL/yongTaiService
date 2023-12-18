@@ -1,5 +1,6 @@
 package com.tencent.wxcloudrun.controller;
 
+import com.tencent.wxcloudrun.entity.Result;
 import org.springframework.web.bind.annotation.*;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.http.HttpStatus;
@@ -7,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import com.tencent.wxcloudrun.service.UserService;
 import com.tencent.wxcloudrun.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * <p>
@@ -23,7 +26,10 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-
+    @PostMapping(value = "/update/{invitationCode}")
+    public Result<String> updateInvitationCode(HttpServletRequest request, @PathVariable("invitationCode") String invitationCode) {
+        return userService.updateInvitationCode(request,invitationCode);
+    }
     @GetMapping(value = "/")
     public ResponseEntity<Page<User>> list(@RequestParam(required = false) Integer current, @RequestParam(required = false) Integer pageSize) {
         if (current == null) {
