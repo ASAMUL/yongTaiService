@@ -87,6 +87,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             one.setUserParentId(parentUser.getUserId());
             this.updateById(one);
 
+        }else  {
+            return Result.OK("邀请码不存在");
         }
         return Result.OK("绑定成功");
     }
