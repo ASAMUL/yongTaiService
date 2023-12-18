@@ -66,4 +66,20 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
                 .collect(Collectors.toList());
         return Result.OK(collect);
     }
+
+    @Override
+    public Result<List<FurnitureVO>> getBySearch(String name) {
+        log.info("根据名称查询家具开始====》,name:{}",name);
+        List<Furniture> list = this.lambdaQuery()
+                .eq(Furniture::getIsDeleted, 0)
+                .like(Furniture::getFName, name)
+                .list();
+        if (CollUtil.isEmpty(list)){
+            return Result.OK(Collections.emptyList());
+        }
+        List<FurnitureVO> collect = list.stream()
+                .map(item -> BeanUtil.copyProperties(item, FurnitureVO.class))
+                .collect(Collectors.toList());
+        return Result.OK(collect);
+    }
 }

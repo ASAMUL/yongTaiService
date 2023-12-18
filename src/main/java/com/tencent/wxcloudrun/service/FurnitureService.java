@@ -23,4 +23,11 @@ public interface FurnitureService extends IService<Furniture> {
      * @return 家具
      */
     Result<List<FurnitureVO>> queryFurnitureByType(String type,String isParent);
+
+    /**
+     * 根据名称查询家具
+     * @param name 名称
+     * @return 家具
+     */
+    Result<List<FurnitureVO>> getBySearch(String name);
 }

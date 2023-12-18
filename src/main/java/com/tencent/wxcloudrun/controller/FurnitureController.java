@@ -38,7 +38,11 @@ public class FurnitureController {
         return furnitureService.queryFurnitureByType(type,isParent);
 
     }
+    @GetMapping(value = "/getBySearch")
+    public Result<List<FurnitureVO>> getBySearch(@RequestParam("name") String name) {
+        return furnitureService.getBySearch(name);
 
+    }
     @GetMapping(value = "/{id}")
     public Result<FurnitureVO> getById(@PathVariable("id") String id) {
         Furniture byId = furnitureService.getById(id);
