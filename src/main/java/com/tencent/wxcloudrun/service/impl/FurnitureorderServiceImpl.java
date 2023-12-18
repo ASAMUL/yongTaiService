@@ -87,14 +87,18 @@ public class FurnitureorderServiceImpl extends ServiceImpl<FurnitureorderMapper,
             log.info("进入待收货状态分支");
             List<Furnitureorder> list = this.lambdaQuery()
                     .eq(Furnitureorder::getFOCId, UserContextHolder.getUserId())
-                    .eq(Furnitureorder::getFOPayStatus, OrderConstants.ORDER_STATUS_PAYED)
-                    .eq(Furnitureorder::getFOStatus, OrderConstants.ORDER_STATUS_PAYED)
                     .eq(Furnitureorder::getIsDeleted, "0")
+                    .and(i -> i.eq(Furnitureorder::getFOPayType, OrderConstants.ORDER_STATUS_PAYED)
+                            .or()
+                            .eq(Furnitureorder::getFOStatus, OrderConstants.ORDER_STATUS_PAYED)
+                            .eq(Furnitureorder::getFOPayStatus, OrderConstants.ORDER_STATUS_PAYED)
+                    )
                     .list();
             List<FurnitureOrderVO> furnitureOrderVos = CollUtil.newArrayList();
             list.forEach(furnitureorder -> {
                 FurnitureOrderVO furnitureOrderVO = FurnitureOrderVO.builder()
                         .FONo(furnitureorder.getFONo())
+                        .foPrice(furnitureorder.getFOPrice())
                         .furnitureList(JSONUtil.toList(furnitureorder.getFuJson(), FuJson.class))
                         .build();
                 furnitureOrderVos.add(furnitureOrderVO);
@@ -111,6 +115,7 @@ public class FurnitureorderServiceImpl extends ServiceImpl<FurnitureorderMapper,
             list.forEach(furnitureorder -> {
                 FurnitureOrderVO furnitureOrderVO = FurnitureOrderVO.builder()
                         .FONo(furnitureorder.getFONo())
+                        .foPrice(furnitureorder.getFOPrice())
                         .furnitureList(JSONUtil.toList(furnitureorder.getFuJson(), FuJson.class))
                         .build();
                 furnitureOrderVos.add(furnitureOrderVO);

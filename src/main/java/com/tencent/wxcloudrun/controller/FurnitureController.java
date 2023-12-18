@@ -1,6 +1,8 @@
 package com.tencent.wxcloudrun.controller;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import com.tencent.wxcloudrun.entity.Furnitureaccessory;
 import com.tencent.wxcloudrun.entity.Result;
 import com.tencent.wxcloudrun.service.FurnitureaccessoryService;
@@ -47,8 +49,13 @@ public class FurnitureController {
     public Result<FurnitureVO> getById(@PathVariable("id") String id) {
         Furniture byId = furnitureService.getById(id);
         FurnitureVO vo = BeanUtil.copyProperties(byId, FurnitureVO.class);
-        Furnitureaccessory fa = furnitureaccessoryService.getById(byId.getFAId());
-        vo.setFAName(fa.getFAName());
+        if (StrUtil.isNotBlank(byId.getFAId())) {
+            List<Furnitureaccessory> list = furnitureaccessoryService.lambdaQuery()
+                    .in(Furnitureaccessory::getFAId, CollUtil.newArrayList(byId.getFAId().split(",")))
+                    .list();
+            vo.setFAName(CollUtil.join(list, ",", Furnitureaccessory::getFAName));
+        }
+
         // 获取配件
         List<FurnitureAccessoryVO> accessories = furnitureaccessoryService.queryByFurnitureId(byId.getFAId());
         vo.setFurnitureAccessoryList(accessories);

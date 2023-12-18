@@ -91,6 +91,17 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
                         })
                         .collect(Collectors.toList());
                 item.setFurnitureAccessoryList(r);
+                if (CollUtil.isNotEmpty(r)){
+                    if (StrUtil.isNotBlank(item.getFAId())){
+                        String[] split = item.getFAId().split(",");
+                        List<String> faNames = r.stream()
+                                .filter(fa -> Arrays.asList(split)
+                                        .contains(Convert.toStr(fa.getFAId())))
+                                .map(FurnitureAccessoryVO::getFAName).collect(Collectors.toList());
+                        item.setFAName(StrUtil.join(",",faNames));
+
+                    }
+                }
             });
         }
         return Result.OK(collect);
@@ -128,6 +139,17 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
                         })
                         .collect(Collectors.toList());
                 item.setFurnitureAccessoryList(r);
+               if (CollUtil.isNotEmpty(r)){
+                  if (StrUtil.isNotBlank(item.getFAId())){
+                      String[] split = item.getFAId().split(",");
+                      List<String> faNames = r.stream()
+                              .filter(fa -> Arrays.asList(split)
+                                      .contains(Convert.toStr(fa.getFAId())))
+                              .map(FurnitureAccessoryVO::getFAName).collect(Collectors.toList());
+                        item.setFAName(StrUtil.join(",",faNames));
+
+                  }
+               }
             });
         }
         return Result.OK(collect);
