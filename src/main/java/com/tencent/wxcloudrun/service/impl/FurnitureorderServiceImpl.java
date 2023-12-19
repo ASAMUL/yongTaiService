@@ -83,6 +83,9 @@ public class FurnitureorderServiceImpl extends ServiceImpl<FurnitureorderMapper,
     @Override
     public Result<List<FurnitureOrderVO>> queryOrderByStatus(String status) {
         log.info("查询订单,状态:{}", status);
+        if (UserContextHolder.getUserId() == null) {
+            throw new RuntimeException("用户未登录");
+        }
         // 如果是0 查询所有订单
         if ("0".equals(status)) {
             log.info("进入所有订单分支");
