@@ -25,6 +25,7 @@ public class FurnitureVO {
      */
 
     private String FFNo;
+    private String fimageList;
 
     /**
      * 家具厂家ID

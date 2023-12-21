@@ -25,7 +25,8 @@ public class Furniture implements Serializable {
 
     @TableId(value = "FId", type = IdType.AUTO)
     private Integer FId;
-
+    @TableField("fimageList")
+    private String fimageList;
     /**
      * 家具名称
      */
