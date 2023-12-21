@@ -1,5 +1,6 @@
 package com.tencent.wxcloudrun.interceptor;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.tencent.wxcloudrun.config.UserContextHolder;
 import com.tencent.wxcloudrun.entity.User;
 import com.tencent.wxcloudrun.service.UserService;
@@ -24,10 +25,13 @@ public class UserContextInterceptor implements HandlerInterceptor {
             if (UserContextHolder.getUserId() != null) {
                 return true;
             }
-            Integer userId = userService.lambdaQuery()
-                            .eq(User::getWeixinOpenid, AESUtil.encrypt(openId))
-                            .one().getUserId();
-            UserContextHolder.setUserId(userId);
+            User one = userService.lambdaQuery()
+                    .eq(User::getWeixinOpenid, AESUtil.encrypt(openId))
+                    .one();
+            if (ObjectUtil.isNotNull(one)) {
+                UserContextHolder.setUserId(one.getUserId());
+            }
+
         }
         return true;
     }
