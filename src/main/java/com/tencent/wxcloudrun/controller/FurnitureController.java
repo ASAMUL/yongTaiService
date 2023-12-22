@@ -47,18 +47,18 @@ public class FurnitureController {
     }
     @GetMapping(value = "/{id}")
     public Result<FurnitureVO> getById(@PathVariable("id") String id) {
-        Furniture byId = furnitureService.getById(id);
-        FurnitureVO vo = BeanUtil.copyProperties(byId, FurnitureVO.class);
-        if (StrUtil.isNotBlank(byId.getFAId())) {
+        FurnitureVO vo = furnitureService.getByIdSql(id);
+        if (StrUtil.isNotBlank(vo.getFAId())) {
             List<Furnitureaccessory> list = furnitureaccessoryService.lambdaQuery()
-                    .in(Furnitureaccessory::getFAId, CollUtil.newArrayList(byId.getFAId().split(",")))
+                    .in(Furnitureaccessory::getFAId, CollUtil.newArrayList(vo.getFAId().split(",")))
                     .list();
             vo.setFAName(CollUtil.join(list, ",", Furnitureaccessory::getFAName));
         }
-
-        // 获取配件
-        List<FurnitureAccessoryVO> accessories = furnitureaccessoryService.queryByFurnitureId(byId.getFAId());
-        vo.setFurnitureAccessoryList(accessories);
+        if ("1".equals(vo.getHasAccessory())) {
+            // 获取配件
+            List<FurnitureAccessoryVO> accessories = furnitureaccessoryService.queryByFurnitureId(vo.getFAId());
+            vo.setFurnitureAccessoryList(accessories);
+        }
         return Result.OK(vo);
     }
 

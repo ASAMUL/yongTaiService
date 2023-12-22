@@ -12,6 +12,7 @@ public class FurnitureVO {
 
 
     private Integer FId;
+    private String FFName;
 
     /**
      * 家具名称
@@ -55,7 +56,7 @@ public class FurnitureVO {
      * 是否有可替换配件
      */
 
-    private Boolean HasAccessory;
+    private String HasAccessory;
 
     /**
      * 家具尺寸

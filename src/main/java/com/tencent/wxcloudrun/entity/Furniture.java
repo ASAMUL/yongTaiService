@@ -67,7 +67,7 @@ public class Furniture implements Serializable {
      * 是否有可替换配件
      */
     @TableField("HasAccessory")
-    private Boolean HasAccessory;
+    private String HasAccessory;
 
     /**
      * 家具尺寸

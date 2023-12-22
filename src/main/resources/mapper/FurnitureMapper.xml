@@ -27,4 +27,17 @@
         <result column="UpdateUser" property="UpdateUser" />
         <result column="IsDeleted" property="IsDeleted" />
     </resultMap>
+
+    <select id="getById" resultType="com.tencent.wxcloudrun.vo.FurnitureVO">
+        select
+            f.*,
+            ff.FFName
+
+        from Furniture f
+        left join
+            FurnitureFactory ff on f.FFactoryId = ff.FFId
+        where
+            f.FId = #{id}
+
+    </select>
 </mapper>

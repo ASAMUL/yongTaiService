@@ -61,6 +61,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .Gender(userForm.getGender())
                 // 普通用户
                 .UserType(1)
+                .IsDeleted("0")
                 .build();
         if (StrUtil.isNotBlank(userForm.getInvitationCode())) {
             User parentUser = getUserByInviteCode(userForm.getInvitationCode());

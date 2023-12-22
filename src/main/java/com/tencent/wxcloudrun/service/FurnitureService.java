@@ -30,4 +30,11 @@ public interface FurnitureService extends IService<Furniture> {
      * @return 家具
      */
     Result<List<FurnitureVO>> getBySearch(String name);
+
+    /**
+     * 根据id查询家具
+     * @param id id
+     * @return 家具
+     */
+    FurnitureVO getByIdSql(String id);
 }

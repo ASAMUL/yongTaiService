@@ -154,4 +154,9 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
         }
         return Result.OK(collect);
     }
+
+    @Override
+    public FurnitureVO getByIdSql(String id) {
+        return baseMapper.getById(id);
+    }
 }
