@@ -4,12 +4,12 @@ import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.tencent.wxcloudrun.dao.UserMapper;
 import com.tencent.wxcloudrun.entity.Result;
 import com.tencent.wxcloudrun.entity.User;
-import com.tencent.wxcloudrun.dao.UserMapper;
 import com.tencent.wxcloudrun.form.UserForm;
 import com.tencent.wxcloudrun.service.UserService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tencent.wxcloudrun.utils.AESUtil;
 import com.tencent.wxcloudrun.vo.UserInfoVO;
 import lombok.extern.slf4j.Slf4j;
@@ -55,42 +55,44 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         // 不存在则创建
         user = User.builder()
-               .weixinOpenid(AESUtil.encrypt(openId))
-               .NickName(userForm.getNickName())
-               .Avatar(userForm.getAvatarUrl())
-               .Gender(userForm.getGender())
-               // 普通用户
-               .UserType(1)
-               .build();
+                .weixinOpenid(AESUtil.encrypt(openId))
+                .NickName(userForm.getNickName())
+                .Avatar(userForm.getAvatarUrl())
+                .Gender(userForm.getGender())
+                // 普通用户
+                .UserType(1)
+                .build();
         if (StrUtil.isNotBlank(userForm.getInvitationCode())) {
             User parentUser = getUserByInviteCode(userForm.getInvitationCode());
             if (ObjectUtil.isNotNull(parentUser)) {
                 user.setUserParentId(parentUser.getUserId());
             }
         }
-         user.setUserInviteCode("WTX"+ user.getUserId());
-         this.save(user);
-         return Result.OK(creatUserInfo(user));
+
+        this.save(user);
+        user.setUserInviteCode("WTX" + user.getUserId());
+        this.updateById(user);
+        return Result.OK(creatUserInfo(user));
 
     }
 
     @Override
-    public Result<String> updateInvitationCode(HttpServletRequest request,String invitationCode) {
+    public Result<String> updateInvitationCode(HttpServletRequest request, String invitationCode) {
         User one = this.lambdaQuery()
                 .eq(User::getWeixinOpenid, AESUtil.encrypt(request.getHeader(OPEN_ID)))
                 .one();
-        if (one.getUserParentId() != null ) {
+        if (one.getUserParentId() != null) {
             return Result.OK("已经绑定过邀请码");
         }
         User parentUser = getUserByInviteCode(invitationCode);
         if (ObjectUtil.isNotNull(parentUser)) {
-            if (ObjectUtil.equal(one.getUserId(),parentUser.getUserId())) {
+            if (ObjectUtil.equal(one.getUserId(), parentUser.getUserId())) {
                 return Result.OK("不能绑定自己的邀请码");
             }
             one.setUserParentId(parentUser.getUserId());
             this.updateById(one);
             return Result.OK("绑定成功");
-        }else  {
+        } else {
             return Result.OK("邀请码不存在");
         }
 
@@ -101,6 +103,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .eq(User::getUserInviteCode, invitationCode)
                 .one();
     }
+
     private UserInfoVO creatUserInfo(User user) {
         return UserInfoVO.builder()
                 .avatarUrl(user.getAvatar())
