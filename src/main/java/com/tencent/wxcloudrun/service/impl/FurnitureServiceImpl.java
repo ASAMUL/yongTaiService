@@ -84,24 +84,34 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
                 .collect(Collectors.toList());
         if (CollUtil.isNotEmpty(accessories)){
             collect.forEach(item -> {
-                List<FurnitureAccessoryVO> r = accessories.stream()
-                        .filter(accessory -> {
+                if ("1".equals(item.getHasAccessory())) {
+                    List<FurnitureAccessoryVO> r = accessories.stream()
+                            .filter(accessory -> {
+                                if ("1".equals(accessory.getIsPublic())){
+                                    return true;
+                                }
+                                if (StrUtil.isNotBlank(item.getFAId())) {
+                                    String[] split = item.getFAId().split(",");
+                                    return Arrays.asList(split).contains(Convert.toStr(accessory.getFAId()));
+                                }
+                                return false;
+                            })
+                            .collect(Collectors.toList());
+                    item.setFurnitureAccessoryList(r);
+                    if (CollUtil.isNotEmpty(r)){
+                        if (StrUtil.isNotBlank(item.getFAId())){
                             String[] split = item.getFAId().split(",");
-                            return Arrays.asList(split).contains(Convert.toStr(accessory.getFAId())) || "1".equals(accessory.getIsPublic());
-                        })
-                        .collect(Collectors.toList());
-                item.setFurnitureAccessoryList(r);
-                if (CollUtil.isNotEmpty(r)){
-                    if (StrUtil.isNotBlank(item.getFAId())){
-                        String[] split = item.getFAId().split(",");
-                        List<String> faNames = r.stream()
-                                .filter(fa -> Arrays.asList(split)
-                                        .contains(Convert.toStr(fa.getFAId())))
-                                .map(FurnitureAccessoryVO::getFAName).collect(Collectors.toList());
-                        item.setFAName(StrUtil.join(",",faNames));
+                            List<String> faNames = r.stream()
+                                    .filter(fa -> Arrays.asList(split)
+                                            .contains(Convert.toStr(fa.getFAId())))
+                                    .map(FurnitureAccessoryVO::getFAName).collect(Collectors.toList());
+                            item.setFAName(StrUtil.join(",",faNames));
 
+                        }
                     }
                 }
+
+
             });
         }
         return Result.OK(collect);
