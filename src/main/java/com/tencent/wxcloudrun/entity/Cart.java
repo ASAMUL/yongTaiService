@@ -35,6 +35,8 @@ public class Cart implements Serializable {
 
     @TableField("user_id")
     private Integer userId;
+    @TableField("faname")
+    private String faname;
     /**
      * 价格
      */

@@ -20,6 +20,7 @@ public class CartForm {
      */
 
     private BigDecimal fprice;
+    private String faname;
 
     /**
      * 打折后的价格
