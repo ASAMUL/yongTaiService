@@ -4,14 +4,13 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.tencent.wxcloudrun.dao.FurnitureMapper;
 import com.tencent.wxcloudrun.dao.FurnitureaccessoryMapper;
 import com.tencent.wxcloudrun.entity.Furniture;
-import com.tencent.wxcloudrun.dao.FurnitureMapper;
 import com.tencent.wxcloudrun.entity.FurnitureType;
-import com.tencent.wxcloudrun.entity.Furnitureaccessory;
 import com.tencent.wxcloudrun.entity.Result;
 import com.tencent.wxcloudrun.service.FurnitureService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tencent.wxcloudrun.service.FurnitureaccessoryService;
 import com.tencent.wxcloudrun.service.FurnituretypeService;
 import com.tencent.wxcloudrun.vo.FurnitureAccessoryVO;
@@ -41,11 +40,12 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
     private final FurnituretypeService furnituretypeService;
     private final FurnitureaccessoryService furnitureaccessoryService;
     private final FurnitureaccessoryMapper furnitureaccessoryMapper;
+
     @Override
-    public Result<List<FurnitureVO>> queryFurnitureByType(String type,String isParent) {
-        log.info("根据类型查询家具开始====》,type:{},isParent:{}",type,isParent);
+    public Result<List<FurnitureVO>> queryFurnitureByType(String type, String isParent) {
+        log.info("根据类型查询家具开始====》,type:{},isParent:{}", type, isParent);
         List<Furniture> list = new ArrayList<>();
-        if (StrUtil.isNotBlank(isParent)){
+        if (StrUtil.isNotBlank(isParent)) {
             // 查询父级类型
             List<Integer> typeIds = furnituretypeService.lambdaQuery()
                     .eq(FurnitureType::getFTParentId, type)
@@ -60,12 +60,12 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
                         .list();
             }
 
-        }else {
+        } else {
             list = this.lambdaQuery()
                     .eq(Furniture::getFTypeId, type)
                     .list();
         }
-        if (CollUtil.isEmpty(list)){
+        if (CollUtil.isEmpty(list)) {
             return Result.OK(Collections.emptyList());
         }
         // 查询配件名称
@@ -82,12 +82,12 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
         List<FurnitureVO> collect = list.stream()
                 .map(item -> BeanUtil.copyProperties(item, FurnitureVO.class))
                 .collect(Collectors.toList());
-        if (CollUtil.isNotEmpty(accessories)){
+        if (CollUtil.isNotEmpty(accessories)) {
             collect.forEach(item -> {
                 if ("1".equals(item.getHasAccessory())) {
                     List<FurnitureAccessoryVO> r = accessories.stream()
                             .filter(accessory -> {
-                                if ("1".equals(accessory.getIsPublic())){
+                                if ("1".equals(accessory.getIsPublic())) {
                                     return true;
                                 }
                                 if (StrUtil.isNotBlank(item.getFAId())) {
@@ -98,14 +98,14 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
                             })
                             .collect(Collectors.toList());
                     item.setFurnitureAccessoryList(r);
-                    if (CollUtil.isNotEmpty(r)){
-                        if (StrUtil.isNotBlank(item.getFAId())){
+                    if (CollUtil.isNotEmpty(r)) {
+                        if (StrUtil.isNotBlank(item.getFAId())) {
                             String[] split = item.getFAId().split(",");
                             List<String> faNames = r.stream()
                                     .filter(fa -> Arrays.asList(split)
                                             .contains(Convert.toStr(fa.getFAId())))
                                     .map(FurnitureAccessoryVO::getFAName).collect(Collectors.toList());
-                            item.setFAName(StrUtil.join(",",faNames));
+                            item.setFAName(StrUtil.join(",", faNames));
 
                         }
                     }
@@ -119,12 +119,12 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
 
     @Override
     public Result<List<FurnitureVO>> getBySearch(String name) {
-        log.info("根据名称查询家具开始====》,name:{}",name);
+        log.info("根据名称查询家具开始====》,name:{}", name);
         List<Furniture> list = this.lambdaQuery()
                 .eq(Furniture::getIsDeleted, 0)
                 .like(Furniture::getFName, name)
                 .list();
-        if (CollUtil.isEmpty(list)){
+        if (CollUtil.isEmpty(list)) {
             return Result.OK(Collections.emptyList());
         }
         // 查询配件名称
@@ -140,26 +140,35 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
         List<FurnitureVO> collect = list.stream()
                 .map(item -> BeanUtil.copyProperties(item, FurnitureVO.class))
                 .collect(Collectors.toList());
-        if (CollUtil.isNotEmpty(accessories)){
+        if (CollUtil.isNotEmpty(accessories)) {
             collect.forEach(item -> {
-                List<FurnitureAccessoryVO> r = accessories.stream()
-                        .filter(accessory -> {
+                if ("1".equals(item.getHasAccessory())) {
+                    List<FurnitureAccessoryVO> r = accessories.stream()
+                            .filter(accessory -> {
+                                if ("1".equals(accessory.getIsPublic())) {
+                                    return true;
+                                }
+                                if (StrUtil.isNotBlank(item.getFAId())) {
+                                    String[] split = item.getFAId().split(",");
+                                    return Arrays.asList(split).contains(Convert.toStr(accessory.getFAId()));
+                                }
+                                return false;
+                            })
+                            .collect(Collectors.toList());
+                    item.setFurnitureAccessoryList(r);
+                    if (CollUtil.isNotEmpty(r)) {
+                        if (StrUtil.isNotBlank(item.getFAId())) {
                             String[] split = item.getFAId().split(",");
-                            return Arrays.asList(split).contains(Convert.toStr(accessory.getFAId())) || "1".equals(accessory.getIsPublic());
-                        })
-                        .collect(Collectors.toList());
-                item.setFurnitureAccessoryList(r);
-               if (CollUtil.isNotEmpty(r)){
-                  if (StrUtil.isNotBlank(item.getFAId())){
-                      String[] split = item.getFAId().split(",");
-                      List<String> faNames = r.stream()
-                              .filter(fa -> Arrays.asList(split)
-                                      .contains(Convert.toStr(fa.getFAId())))
-                              .map(FurnitureAccessoryVO::getFAName).collect(Collectors.toList());
-                        item.setFAName(StrUtil.join(",",faNames));
+                            List<String> faNames = r.stream()
+                                    .filter(fa -> Arrays.asList(split)
+                                            .contains(Convert.toStr(fa.getFAId())))
+                                    .map(FurnitureAccessoryVO::getFAName).collect(Collectors.toList());
+                            item.setFAName(StrUtil.join(",", faNames));
 
-                  }
-               }
+                        }
+                    }
+                }
+
             });
         }
         return Result.OK(collect);
