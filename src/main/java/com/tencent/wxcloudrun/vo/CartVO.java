@@ -19,6 +19,7 @@ public class CartVO {
      */
 
     private Integer fid;
+    private String faname;
 
     private Integer id;
 
