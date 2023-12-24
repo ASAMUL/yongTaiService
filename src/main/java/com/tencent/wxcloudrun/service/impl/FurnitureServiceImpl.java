@@ -90,17 +90,17 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
                     List<FurnitureAccessoryVO> r = accessories.stream()
                             .filter(accessory -> {
                                 if ("1".equals(accessory.getIsPublic())) {
-                                    return true;
-                                }
-                                if (ObjectUtil.isNotNull(item.getFFactoryId())) {
-                                    if (Objects.equals(item.getFFactoryId(), accessory.getFAFId())) {
+                                    if (ObjectUtil.isNull(accessory.getFAFId())) {
                                         return true;
                                     }
+                                    return ObjectUtil.isNotNull(accessory.getFAFId()) && ObjectUtil.equal(accessory.getFAFId(), item.getFFactoryId());
                                 }
-
+                                if (ObjectUtil.isNotNull(accessory.getFAFId())) {
+                                    return ObjectUtil.equal(accessory.getFAFId(), item.getFFactoryId());
+                                }
                                 if (StrUtil.isNotBlank(item.getFAId())) {
-                                    String[] split = item.getFAId().split(",");
-                                    return Arrays.asList(split).contains(Convert.toStr(accessory.getFAId()));
+                                    List<String> ids = Arrays.asList(item.getFAId().split(","));
+                                    return ids.contains(Convert.toStr(accessory.getFAId()));
                                 }
                                 return false;
                             })
@@ -158,16 +158,17 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
                     List<FurnitureAccessoryVO> r = accessories.stream()
                             .filter(accessory -> {
                                 if ("1".equals(accessory.getIsPublic())) {
-                                    return true;
-                                }
-                                if (ObjectUtil.isNotNull(item.getFFactoryId())) {
-                                    if (Objects.equals(item.getFFactoryId(), accessory.getFAFId())) {
+                                    if (ObjectUtil.isNull(accessory.getFAFId())) {
                                         return true;
                                     }
+                                    return ObjectUtil.isNotNull(accessory.getFAFId()) && ObjectUtil.equal(accessory.getFAFId(), item.getFFactoryId());
+                                }
+                                if (ObjectUtil.isNotNull(accessory.getFAFId())) {
+                                    return ObjectUtil.equal(accessory.getFAFId(), item.getFFactoryId());
                                 }
                                 if (StrUtil.isNotBlank(item.getFAId())) {
-                                    String[] split = item.getFAId().split(",");
-                                    return Arrays.asList(split).contains(Convert.toStr(accessory.getFAId()));
+                                    List<String> ids = Arrays.asList(item.getFAId().split(","));
+                                    return ids.contains(Convert.toStr(accessory.getFAId()));
                                 }
                                 return false;
                             })

@@ -2,6 +2,8 @@ package com.tencent.wxcloudrun.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.convert.Convert;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.tencent.wxcloudrun.entity.Furnitureaccessory;
@@ -41,6 +43,23 @@ public class FurnitureaccessoryServiceImpl extends ServiceImpl<Furnitureaccessor
             }
         }
         List<FurnitureAccessoryVO> furnitureAccessoryVOS = baseMapper.queryByFurnitureIds(ids, CollUtil.newArrayList(ffId));
+        furnitureAccessoryVOS = furnitureAccessoryVOS.stream()
+                .filter(item -> {
+                    if ("1".equals(item.getIsPublic())) {
+                        if (ObjectUtil.isNull(item.getFAFId())) {
+                            return true;
+                        }
+                        return ObjectUtil.isNotNull(item.getFAFId()) && item.getFAFId().equals(ffId);
+                    }
+                    if (ObjectUtil.isNotNull(item.getFAFId())) {
+                        return ObjectUtil.equal(item.getFAFId(), ffId);
+                    }
+                    if (CollUtil.isNotEmpty(ids)) {
+                        return ids.contains(Convert.toStr(item.getFAId()));
+                    }
+                    return false;
+                })
+                .collect(Collectors.toList());
         // 查询出所有的公共配件
 //        List<Furnitureaccessory> list = this.lambdaQuery()
 //                .eq(Furnitureaccessory::getIsPublic, 1)
