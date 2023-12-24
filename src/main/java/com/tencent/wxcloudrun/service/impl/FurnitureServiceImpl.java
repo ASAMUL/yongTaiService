@@ -3,6 +3,7 @@ package com.tencent.wxcloudrun.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tencent.wxcloudrun.dao.FurnitureMapper;
@@ -19,10 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -70,15 +68,19 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
         }
         // 查询配件名称
         List<String> typeIds = new ArrayList<>();
+        List<Integer> ffIds = new ArrayList<>();
         list.forEach(item -> {
             if (StrUtil.isNotBlank(item.getFAId())) {
                 String[] split = item.getFAId().split(",");
                 typeIds.addAll(Arrays.asList(split));
             }
+            if (ObjectUtil.isNotNull(item.getFFactoryId())) {
+                ffIds.add(item.getFFactoryId());
+            }
         });
         // 查询公共配件
 
-        List<FurnitureAccessoryVO> accessories = furnitureaccessoryMapper.queryByFurnitureIds(typeIds);
+        List<FurnitureAccessoryVO> accessories = furnitureaccessoryMapper.queryByFurnitureIds(typeIds,ffIds);
         List<FurnitureVO> collect = list.stream()
                 .map(item -> BeanUtil.copyProperties(item, FurnitureVO.class))
                 .collect(Collectors.toList());
@@ -90,6 +92,12 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
                                 if ("1".equals(accessory.getIsPublic())) {
                                     return true;
                                 }
+                                if (ObjectUtil.isNotNull(item.getFFactoryId())) {
+                                    if (Objects.equals(item.getFFactoryId(), accessory.getFAFId())) {
+                                        return true;
+                                    }
+                                }
+
                                 if (StrUtil.isNotBlank(item.getFAId())) {
                                     String[] split = item.getFAId().split(",");
                                     return Arrays.asList(split).contains(Convert.toStr(accessory.getFAId()));
@@ -129,14 +137,18 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
         }
         // 查询配件名称
         List<String> typeIds = new ArrayList<>();
+        List<Integer> ffIds = new ArrayList<>();
         list.forEach(item -> {
             if (StrUtil.isNotBlank(item.getFAId())) {
                 String[] split = item.getFAId().split(",");
                 typeIds.addAll(Arrays.asList(split));
             }
+            if (ObjectUtil.isNotNull(item.getFFactoryId())) {
+                ffIds.add(item.getFFactoryId());
+            }
         });
         // 查询公共配件
-        List<FurnitureAccessoryVO> accessories = furnitureaccessoryMapper.queryByFurnitureIds(typeIds);
+        List<FurnitureAccessoryVO> accessories = furnitureaccessoryMapper.queryByFurnitureIds(typeIds,ffIds);
         List<FurnitureVO> collect = list.stream()
                 .map(item -> BeanUtil.copyProperties(item, FurnitureVO.class))
                 .collect(Collectors.toList());
@@ -147,6 +159,11 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
                             .filter(accessory -> {
                                 if ("1".equals(accessory.getIsPublic())) {
                                     return true;
+                                }
+                                if (ObjectUtil.isNotNull(item.getFFactoryId())) {
+                                    if (Objects.equals(item.getFFactoryId(), accessory.getFAFId())) {
+                                        return true;
+                                    }
                                 }
                                 if (StrUtil.isNotBlank(item.getFAId())) {
                                     String[] split = item.getFAId().split(",");

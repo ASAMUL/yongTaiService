@@ -37,6 +37,15 @@
         SELECT *
         FROM FurnitureAccessory pfa
         WHERE pfa.IsPublic = 1 and pfa.IsDeleted = 0
+        <if test="ffIds != null and ffIds.size() > 0">
+            UNION
+            SELECT *
+            FROM FurnitureAccessory ffa
+            WHERE ffa.FAFId IN
+            <foreach collection="ffIds" item="item" index="index" open="(" close=")" separator=",">
+                #{item}
+            </foreach>
 
+        </if>
     </select>
 </mapper>

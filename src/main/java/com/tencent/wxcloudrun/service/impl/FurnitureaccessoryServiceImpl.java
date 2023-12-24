@@ -28,9 +28,9 @@ import java.util.stream.Collectors;
 public class FurnitureaccessoryServiceImpl extends ServiceImpl<FurnitureaccessoryMapper, Furnitureaccessory> implements FurnitureaccessoryService {
 
     @Override
-    public List<FurnitureAccessoryVO> queryByFurnitureId(String faId) {
+    public List<FurnitureAccessoryVO> queryByFurnitureId(String faId,Integer ffId) {
         log.info("查询家具配件, faId:{}", faId);
-        Set<String> ids = new HashSet<>();
+        List<String> ids = new ArrayList<>();
         if (StrUtil.isNotBlank(faId)) {
             if (faId.contains(",")) {
                 String[] faIds = faId.split(",");
@@ -40,20 +40,20 @@ public class FurnitureaccessoryServiceImpl extends ServiceImpl<Furnitureaccessor
                 ids.add(faId);
             }
         }
-
+        List<FurnitureAccessoryVO> furnitureAccessoryVOS = baseMapper.queryByFurnitureIds(ids, CollUtil.newArrayList(ffId));
         // 查询出所有的公共配件
-        List<Furnitureaccessory> list = this.lambdaQuery()
-                .eq(Furnitureaccessory::getIsPublic, 1)
-                .eq(Furnitureaccessory::getIsDeleted, 0)
-                .notIn(CollUtil.isNotEmpty(ids), Furnitureaccessory::getFAId, ids)
-                .list();
-        if (CollUtil.isNotEmpty(ids)) {
-            List<Furnitureaccessory> privateFa = this.lambdaQuery()
-                    .in(Furnitureaccessory::getFAId, ids)
-                    .list();
-            list.addAll(privateFa);
-        }
+//        List<Furnitureaccessory> list = this.lambdaQuery()
+//                .eq(Furnitureaccessory::getIsPublic, 1)
+//                .eq(Furnitureaccessory::getIsDeleted, 0)
+//                .notIn(CollUtil.isNotEmpty(ids), Furnitureaccessory::getFAId, ids)
+//                .list();
+//        if (CollUtil.isNotEmpty(ids)) {
+//            List<Furnitureaccessory> privateFa = this.lambdaQuery()
+//                    .in(Furnitureaccessory::getFAId, ids)
+//                    .list();
+//            list.addAll(privateFa);
+//        }
 
-        return list.stream().map(item -> BeanUtil.copyProperties(item, FurnitureAccessoryVO.class)).collect(Collectors.toList());
+        return furnitureAccessoryVOS;
     }
 }

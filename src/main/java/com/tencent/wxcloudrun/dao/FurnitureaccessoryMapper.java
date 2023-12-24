@@ -17,5 +17,5 @@ import java.util.List;
  */
 public interface FurnitureaccessoryMapper extends BaseMapper<Furnitureaccessory> {
 
-    List<FurnitureAccessoryVO> queryByFurnitureIds(@Param("ids") List<String> ids);
+    List<FurnitureAccessoryVO> queryByFurnitureIds(@Param("ids") List<String> ids,@Param("ffIds") List<Integer> ffIds);
 }
