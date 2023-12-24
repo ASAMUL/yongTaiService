@@ -6,6 +6,10 @@ public interface OrderConstants {
      */
     String ORDER_STATUS_WAIT_PAY = "0";
     /**
+     * 订单状态：待收尾款
+     */
+    String ORDER_STATUS_WAIT_BALANCE = "5";
+    /**
      * 订单状态：已支付
      */
     String ORDER_STATUS_PAYED = "1";

@@ -55,12 +55,14 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
                 typeIds.add(Convert.toInt(type));
                 list = this.lambdaQuery()
                         .in(Furniture::getFTypeId, typeIds)
+                        .eq(Furniture::getIsDeleted, "0")
                         .list();
             }
 
         } else {
             list = this.lambdaQuery()
                     .eq(Furniture::getFTypeId, type)
+                    .eq(Furniture::getIsDeleted, "0")
                     .list();
         }
         if (CollUtil.isEmpty(list)) {

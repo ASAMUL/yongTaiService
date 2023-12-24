@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +22,7 @@ public class WxPayServiceImpl implements WxPayService {
     private final WxPayConfig wxPayConfig;
 
     @Override
-    public PrepayWithRequestPaymentResponse createWxPayOrder(HttpServletRequest request, String orderId,String foDiscountPrice) {
+    public PrepayWithRequestPaymentResponse createWxPayOrder(HttpServletRequest request, String orderId,String foDiscountPrice,boolean isDeposit) {
         PrepayRequest prepayRequest = new PrepayRequest();
         prepayRequest.setAppid(wxPayConfig.getAppid());
         prepayRequest.setMchid(wxPayConfig.getMchId());
@@ -30,7 +31,11 @@ public class WxPayServiceImpl implements WxPayService {
         prepayRequest.setNotifyUrl(wxPayConfig.getNotifyUrl());
         // 金额
         Amount amount = new Amount();
-        int price = Convert.toBigDecimal(foDiscountPrice).multiply(new BigDecimal("100")).intValueExact();
+        BigDecimal p = Convert.toBigDecimal(foDiscountPrice);
+        if (isDeposit){
+            p = p.multiply(new BigDecimal("0.3")).setScale(2, RoundingMode.HALF_UP);
+        }
+        int price = p.multiply(new BigDecimal("100")).intValueExact();
         if (price == 0) {
             throw new RuntimeException("金额转换错误");
         }

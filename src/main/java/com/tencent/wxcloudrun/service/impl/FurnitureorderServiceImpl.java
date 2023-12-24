@@ -3,6 +3,7 @@ package com.tencent.wxcloudrun.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.tencent.wxcloudrun.config.UserContextHolder;
 import com.tencent.wxcloudrun.entity.Furniture;
@@ -47,6 +48,8 @@ public class FurnitureorderServiceImpl extends ServiceImpl<FurnitureorderMapper,
         log.info("创建订单,form:{}", JSONUtil.toJsonStr(form));
         // 订单号
         String orderNo = IdUtil.getSnowflake().nextIdStr();
+        // 是否是付定金
+        boolean isDeposit = "1".equals(form.getDeposit());
         Furnitureorder furnitureorder = Furnitureorder.builder()
                 .FOCTDAddress(form.getFocTdAddress())
                 .FOPrice(Convert.toBigDecimal(form.getFoPrice()))
@@ -63,7 +66,7 @@ public class FurnitureorderServiceImpl extends ServiceImpl<FurnitureorderMapper,
                 // 订单状态
                 .FOStatus(OrderConstants.ORDER_STATUS_WAIT_PAY)
                 // 支付状态
-                .FOPayStatus(OrderConstants.ORDER_STATUS_WAIT_PAY)
+                .FOPayStatus(isDeposit ? OrderConstants.ORDER_STATUS_WAIT_BALANCE : OrderConstants.ORDER_STATUS_WAIT_PAY)
                 .IsDeleted("0")
                 .build();
         boolean save = this.save(furnitureorder);
@@ -72,7 +75,7 @@ public class FurnitureorderServiceImpl extends ServiceImpl<FurnitureorderMapper,
                 log.info("删除购物车分支");
                 cartService.removeBatchByIds(form.getCartIdList());
             }
-            PrepayWithRequestPaymentResponse wxPayOrder = wxPayService.createWxPayOrder(request, orderNo,form.getFoDiscountPrice());
+            PrepayWithRequestPaymentResponse wxPayOrder = wxPayService.createWxPayOrder(request, orderNo,form.getFoDiscountPrice(),isDeposit);
             return Result.OK(wxPayOrder);
         }else {
             throw new RuntimeException("创建订单失败");
