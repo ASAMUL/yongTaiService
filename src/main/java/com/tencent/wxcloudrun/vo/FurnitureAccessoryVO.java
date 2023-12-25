@@ -18,6 +18,10 @@ public class FurnitureAccessoryVO {
      * 是配件
      */
     private String isAccessory;
+    /**
+     * 是尺寸
+     */
+    private String isSize;
 
     /**
      * 家具配件图
