@@ -61,11 +61,6 @@ public class FurnitureaccessoryServiceImpl extends ServiceImpl<Furnitureaccessor
                     return false;
                 })
                 .collect(Collectors.toList());
-        for (FurnitureAccessoryVO fa : furnitureAccessoryVOS) {
-            if (equalsPriceZreo(fa.getFAPrice())) {
-                fa.setIsAccessory("1");
-            }
-        }
                         // 查询出所有的公共配件
 //        List<Furnitureaccessory> list = this.lambdaQuery()
 //                .eq(Furnitureaccessory::getIsPublic, 1)

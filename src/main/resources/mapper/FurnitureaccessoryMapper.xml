@@ -25,7 +25,8 @@
 
     <select id="queryByFurnitureIds" resultType="com.tencent.wxcloudrun.vo.FurnitureAccessoryVO">
         <if test="ids != null and ids.size() > 0">
-            SELECT *
+            SELECT *,
+            IF(fa.FAPrice = 0,'1',null) as isAccessory
             FROM FurnitureAccessory fa
             WHERE fa.FAId IN
             <foreach collection="ids" item="item" index="index" open="(" close=")" separator=",">
@@ -34,12 +35,14 @@
             UNION
         </if>
 
-        SELECT *
+        SELECT *,
+        null as isAccessory
         FROM FurnitureAccessory pfa
         WHERE pfa.IsPublic = 1 and pfa.IsDeleted = 0
         <if test="ffIds != null and ffIds.size() > 0">
             UNION
-            SELECT *
+            SELECT *,
+            null as isAccessory
             FROM FurnitureAccessory ffa
             WHERE ffa.FAFId IN
             <foreach collection="ffIds" item="item" index="index" open="(" close=")" separator=",">

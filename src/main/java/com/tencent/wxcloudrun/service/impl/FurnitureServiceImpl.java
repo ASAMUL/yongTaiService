@@ -108,11 +108,7 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
                                 return false;
                             })
                             .collect(Collectors.toList());
-                    for (FurnitureAccessoryVO fa : r) {
-                        if (equalsPriceZreo(fa.getFAPrice())) {
-                            fa.setIsAccessory("1");
-                        }
-                    }
+
                     item.setFurnitureAccessoryList(r);
                     if (CollUtil.isNotEmpty(r)) {
                         if (StrUtil.isNotBlank(item.getFAId())) {
@@ -183,11 +179,7 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
                                 return false;
                             })
                             .collect(Collectors.toList());
-                    for (FurnitureAccessoryVO fa : r) {
-                        if (equalsPriceZreo(fa.getFAPrice())) {
-                            fa.setIsAccessory("1");
-                        }
-                    }
+
                     item.setFurnitureAccessoryList(r);
                     if (CollUtil.isNotEmpty(r)) {
                         if (StrUtil.isNotBlank(item.getFAId())) {
