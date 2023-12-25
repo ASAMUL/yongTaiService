@@ -42,6 +42,7 @@ public class CartVO {
      */
 
     private List<FurnitureAccessoryForm> publicAccessoryList;
+    private List<FurnitureAccessoryForm> furnitureSize;
 
     /**
      * 自带配件

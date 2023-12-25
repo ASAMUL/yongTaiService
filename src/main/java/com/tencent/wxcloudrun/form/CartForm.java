@@ -14,6 +14,10 @@ public class CartForm {
      */
 
     private Integer fid;
+    /**
+     * 家具尺寸数组
+     */
+    private List<FurnitureAccessoryForm> furnitureSize;
 
     /**
      * 价格

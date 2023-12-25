@@ -34,9 +34,12 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements Ca
     @Override
     public Result<String> addCart(CartForm form) {
         log.info("添加购物车:{}" , JSONUtil.toJsonStr(form));
-        Cart cart = BeanUtil.copyProperties(form, Cart.class,"publicAccessoryList");
+        Cart cart = BeanUtil.copyProperties(form, Cart.class,"publicAccessoryList","furnitureSize");
         if (CollUtil.isNotEmpty(form.getPublicAccessoryList())) {
             cart.setPublicAccessoryList(JSONUtil.toJsonStr(form.getPublicAccessoryList()));
+        }
+        if (CollUtil.isNotEmpty(form.getFurnitureSize())) {
+            cart.setFurnitureSize(JSONUtil.toJsonStr(form.getFurnitureSize()));
         }
         cart.setUserId(UserContextHolder.getUserId());
         boolean save = this.save(cart);
@@ -57,6 +60,10 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements Ca
                     if (StrUtil.isNotBlank(cart.getPublicAccessoryList())) {
                         List<FurnitureAccessoryForm> publicAccessoryList = JSONUtil.toList(JSONUtil.parseArray(cart.getPublicAccessoryList()), FurnitureAccessoryForm.class);
                         vo.setPublicAccessoryList(publicAccessoryList);
+                    }
+                    if (StrUtil.isNotBlank(cart.getFurnitureSize())) {
+                        List<FurnitureAccessoryForm> furnitureSize = JSONUtil.toList(JSONUtil.parseArray(cart.getFurnitureSize()), FurnitureAccessoryForm.class);
+                        vo.setFurnitureSize(furnitureSize);
                     }
                     return vo;
                 })
