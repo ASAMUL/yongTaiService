@@ -27,7 +27,7 @@
         <if test="ids != null and ids.size() > 0">
             SELECT *,
             IF(fa.FAPrice = 0,'1',null) as isAccessory,
-            IF(fa.FAPrice != 0,'1',null) as isSize,
+            IF(fa.FAPrice != 0,'1',null) as isSize
             FROM FurnitureAccessory fa
             WHERE fa.FAId IN
             <foreach collection="ids" item="item" index="index" open="(" close=")" separator=",">
