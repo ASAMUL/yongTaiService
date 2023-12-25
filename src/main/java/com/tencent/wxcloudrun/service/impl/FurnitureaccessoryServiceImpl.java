@@ -1,20 +1,21 @@
 package com.tencent.wxcloudrun.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
-import com.tencent.wxcloudrun.entity.Furnitureaccessory;
-import com.tencent.wxcloudrun.dao.FurnitureaccessoryMapper;
-import com.tencent.wxcloudrun.service.FurnitureaccessoryService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.tencent.wxcloudrun.dao.FurnitureaccessoryMapper;
+import com.tencent.wxcloudrun.entity.Furnitureaccessory;
+import com.tencent.wxcloudrun.service.FurnitureaccessoryService;
 import com.tencent.wxcloudrun.vo.FurnitureAccessoryVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -30,7 +31,7 @@ import java.util.stream.Collectors;
 public class FurnitureaccessoryServiceImpl extends ServiceImpl<FurnitureaccessoryMapper, Furnitureaccessory> implements FurnitureaccessoryService {
 
     @Override
-    public List<FurnitureAccessoryVO> queryByFurnitureId(String faId,Integer ffId) {
+    public List<FurnitureAccessoryVO> queryByFurnitureId(String faId, Integer ffId) {
         log.info("查询家具配件, faId:{}", faId);
         List<String> ids = new ArrayList<>();
         if (StrUtil.isNotBlank(faId)) {
@@ -38,7 +39,7 @@ public class FurnitureaccessoryServiceImpl extends ServiceImpl<Furnitureaccessor
                 String[] faIds = faId.split(",");
                 // 查询出所有的公共配件和该家具的私有配件
                 ids.addAll(Arrays.asList(faIds));
-            }else {
+            } else {
                 ids.add(faId);
             }
         }
@@ -60,7 +61,12 @@ public class FurnitureaccessoryServiceImpl extends ServiceImpl<Furnitureaccessor
                     return false;
                 })
                 .collect(Collectors.toList());
-        // 查询出所有的公共配件
+        for (FurnitureAccessoryVO fa : furnitureAccessoryVOS) {
+            if (equalsPriceZreo(fa.getFAPrice())) {
+                fa.setIsAccessory("1");
+            }
+        }
+                        // 查询出所有的公共配件
 //        List<Furnitureaccessory> list = this.lambdaQuery()
 //                .eq(Furnitureaccessory::getIsPublic, 1)
 //                .eq(Furnitureaccessory::getIsDeleted, 0)
@@ -74,5 +80,9 @@ public class FurnitureaccessoryServiceImpl extends ServiceImpl<Furnitureaccessor
 //        }
 
         return furnitureAccessoryVOS;
+    }
+
+    private boolean equalsPriceZreo(BigDecimal price) {
+        return price.equals(new BigDecimal("0.00")) || price.equals(new BigDecimal("0.0")) || price.equals(new BigDecimal("0"));
     }
 }

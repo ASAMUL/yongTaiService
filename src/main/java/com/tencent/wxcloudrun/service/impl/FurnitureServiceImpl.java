@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -107,6 +108,11 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
                                 return false;
                             })
                             .collect(Collectors.toList());
+                    for (FurnitureAccessoryVO fa : r) {
+                        if (equalsPriceZreo(fa.getFAPrice())) {
+                            fa.setIsAccessory("1");
+                        }
+                    }
                     item.setFurnitureAccessoryList(r);
                     if (CollUtil.isNotEmpty(r)) {
                         if (StrUtil.isNotBlank(item.getFAId())) {
@@ -126,7 +132,9 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
         }
         return Result.OK(collect);
     }
-
+    private boolean equalsPriceZreo(BigDecimal price){
+        return price.equals(new BigDecimal("0.00")) || price.equals(new BigDecimal("0.0")) || price.equals(new BigDecimal("0"));
+    }
     @Override
     public Result<List<FurnitureVO>> getBySearch(String name) {
         log.info("根据名称查询家具开始====》,name:{}", name);
@@ -175,6 +183,11 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
                                 return false;
                             })
                             .collect(Collectors.toList());
+                    for (FurnitureAccessoryVO fa : r) {
+                        if (equalsPriceZreo(fa.getFAPrice())) {
+                            fa.setIsAccessory("1");
+                        }
+                    }
                     item.setFurnitureAccessoryList(r);
                     if (CollUtil.isNotEmpty(r)) {
                         if (StrUtil.isNotBlank(item.getFAId())) {
