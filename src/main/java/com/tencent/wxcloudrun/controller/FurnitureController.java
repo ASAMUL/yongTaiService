@@ -17,7 +17,10 @@ import com.tencent.wxcloudrun.service.FurnitureService;
 import com.tencent.wxcloudrun.entity.Furniture;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -52,6 +55,7 @@ public class FurnitureController {
             List<Furnitureaccessory> list = furnitureaccessoryService.lambdaQuery()
                     .in(Furnitureaccessory::getFAId, CollUtil.newArrayList(vo.getFAId().split(",")))
                     .list();
+            list = list.stream().filter(item -> equalsPriceZreo(item.getFAPrice())).collect(Collectors.toList());
             vo.setFAName(CollUtil.join(list, ",", Furnitureaccessory::getFAName));
         }
         if ("1".equals(vo.getHasAccessory())) {
@@ -78,5 +82,8 @@ public class FurnitureController {
     public ResponseEntity<Object> delete(@RequestBody Furniture params) {
         furnitureService.updateById(params);
         return new ResponseEntity<>("updated successfully", HttpStatus.OK);
+    }
+    private boolean equalsPriceZreo(BigDecimal price) {
+        return price.equals(new BigDecimal("0.00")) || price.equals(new BigDecimal("0.0")) || price.equals(new BigDecimal("0"));
     }
 }

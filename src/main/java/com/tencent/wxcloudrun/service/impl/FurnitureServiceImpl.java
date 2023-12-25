@@ -119,7 +119,7 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
                             String[] split = item.getFAId().split(",");
                             List<String> faNames = r.stream()
                                     .filter(fa -> Arrays.asList(split)
-                                            .contains(Convert.toStr(fa.getFAId())))
+                                            .contains(Convert.toStr(fa.getFAId())) && equalsPriceZreo(fa.getFAPrice()))
                                     .map(FurnitureAccessoryVO::getFAName).collect(Collectors.toList());
                             item.setFAName(StrUtil.join(",", faNames));
 
@@ -194,7 +194,7 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
                             String[] split = item.getFAId().split(",");
                             List<String> faNames = r.stream()
                                     .filter(fa -> Arrays.asList(split)
-                                            .contains(Convert.toStr(fa.getFAId())))
+                                            .contains(Convert.toStr(fa.getFAId())) && equalsPriceZreo(fa.getFAPrice()))
                                     .map(FurnitureAccessoryVO::getFAName).collect(Collectors.toList());
                             item.setFAName(StrUtil.join(",", faNames));
 
