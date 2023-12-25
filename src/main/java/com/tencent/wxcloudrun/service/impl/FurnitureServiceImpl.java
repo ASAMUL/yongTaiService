@@ -133,7 +133,7 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
         return Result.OK(collect);
     }
     private boolean equalsPriceZreo(BigDecimal price){
-        return price.equals(new BigDecimal("0.00")) || price.equals(new BigDecimal("0.0")) || price.equals(new BigDecimal("0"));
+        return ObjectUtil.isNull(price) || price.equals(new BigDecimal("0.00")) || price.equals(new BigDecimal("0.0")) || price.equals(new BigDecimal("0"));
     }
     @Override
     public Result<List<FurnitureVO>> getBySearch(String name) {
