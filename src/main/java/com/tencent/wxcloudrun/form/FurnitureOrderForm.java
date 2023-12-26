@@ -12,6 +12,7 @@ public class FurnitureOrderForm {
     private String fofaId;
     private String foDiscountPrice;
     private String foBalance;
+    private String consignee;
     private String foPayType;
     private String focId;
     private List<Integer> cartIdList;

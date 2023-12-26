@@ -13,4 +13,5 @@ public class FuJson {
     private String faName;
     private String faId;
     private List<FaListJson> faList;
+    private List<FaListJson> sizeList;
 }

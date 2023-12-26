@@ -29,6 +29,11 @@ public class Furnitureorder implements Serializable {
     private Integer FOId;
     @TableField("FONumber")
     private String FONumber;
+    /**
+     * 收货人
+     */
+    @TableField("consignee")
+    private String  consignee;
     @TableField("fuJson")
     private String fuJson;
     /**

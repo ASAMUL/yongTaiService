@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import com.tencent.wxcloudrun.constants.OrderConstants;
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,12 +51,14 @@ public class FurnitureorderServiceImpl extends ServiceImpl<FurnitureorderMapper,
         String orderNo = IdUtil.getSnowflake().nextIdStr();
         // 是否是付定金
         boolean isDeposit = "1".equals(form.getDeposit());
+        BigDecimal foDiscountPrice = Convert.toBigDecimal(form.getFoDiscountPrice());
         Furnitureorder furnitureorder = Furnitureorder.builder()
                 .FOCTDAddress(form.getFocTdAddress())
                 .FOPrice(Convert.toBigDecimal(form.getFoPrice()))
                 .FOFAId(form.getFofaId())
+                .consignee(form.getConsignee())
                 .FOFId((form.getFofId()))
-                .FODiscountPrice(Convert.toBigDecimal(form.getFoDiscountPrice()))
+                .FODiscountPrice(foDiscountPrice)
                 .FOPayType(form.getFoPayType())
                 .FORemark(form.getFoRemark())
                 .FOCTDWay(form.getFocTdWay())
@@ -63,6 +66,8 @@ public class FurnitureorderServiceImpl extends ServiceImpl<FurnitureorderMapper,
                 .FOCTel(form.getFocTel())
                 .FONo(orderNo)
                 .FOCId(UserContextHolder.getUserId())
+                // 订单余款
+                .FOBalance(isDeposit ? foDiscountPrice.subtract(foDiscountPrice.multiply(new BigDecimal("0.3"))): null)
                 // 订单状态
                 .FOStatus(OrderConstants.ORDER_STATUS_WAIT_PAY)
                 // 支付状态
