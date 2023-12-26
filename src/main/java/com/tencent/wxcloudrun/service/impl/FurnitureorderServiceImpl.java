@@ -29,6 +29,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.tencent.wxcloudrun.constants.WeChatConstants.OPEN_ID;
+
 /**
  * <p>
  * 家具订单表 服务实现类
@@ -46,6 +48,9 @@ public class FurnitureorderServiceImpl extends ServiceImpl<FurnitureorderMapper,
     public final CartService cartService;
     @Override
     public Result<PrepayWithRequestPaymentResponse> createOrder(FurnitureOrderForm form, HttpServletRequest request) {
+        if (StrUtil.isBlank(request.getHeader(OPEN_ID))) {
+            throw new RuntimeException("非法请求");
+        }
         log.info("创建订单,form:{}", JSONUtil.toJsonStr(form));
         // 订单号
         String orderNo = IdUtil.getSnowflake().nextIdStr();
