@@ -56,7 +56,7 @@ public class CartServiceImpl extends ServiceImpl<CartMapper, Cart> implements Ca
         // 转换配件
         List<CartVO> cartVos = list.stream()
                 .map(cart -> {
-                    CartVO vo = BeanUtil.copyProperties(cart, CartVO.class, "publicAccessoryList");
+                    CartVO vo = BeanUtil.copyProperties(cart, CartVO.class, "publicAccessoryList", "furnitureSize");
                     if (StrUtil.isNotBlank(cart.getPublicAccessoryList())) {
                         List<FurnitureAccessoryForm> publicAccessoryList = JSONUtil.toList(JSONUtil.parseArray(cart.getPublicAccessoryList()), FurnitureAccessoryForm.class);
                         vo.setPublicAccessoryList(publicAccessoryList);
