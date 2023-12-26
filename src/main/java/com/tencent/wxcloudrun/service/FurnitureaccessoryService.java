@@ -21,7 +21,7 @@ public interface FurnitureaccessoryService extends IService<Furnitureaccessory> 
      * @param faId 家具id
      * @return 配件列表
      */
-    List<FurnitureAccessoryVO> queryByFurnitureId(String faId,Integer ffId);
+    List<FurnitureAccessoryVO> queryByFurnitureId(String faId,Integer ffId,Integer typeId);
 
 
 }

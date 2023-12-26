@@ -92,6 +92,9 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
                 if ("1".equals(item.getHasAccessory())) {
                     List<FurnitureAccessoryVO> r = accessories.stream()
                             .filter(accessory -> {
+                                if (ObjectUtil.notEqual(accessory.getFATId(), item.getFTypeId())) {
+                                    return false;
+                                }
                                 if ("1".equals(accessory.getIsPublic())) {
                                     if (ObjectUtil.isNull(accessory.getFAFId())) {
                                         return true;
@@ -163,6 +166,9 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
                 if ("1".equals(item.getHasAccessory())) {
                     List<FurnitureAccessoryVO> r = accessories.stream()
                             .filter(accessory -> {
+                                if (ObjectUtil.notEqual(accessory.getFATId(), item.getFTypeId())) {
+                                    return false;
+                                }
                                 if ("1".equals(accessory.getIsPublic())) {
                                     if (ObjectUtil.isNull(accessory.getFAFId())) {
                                         return true;

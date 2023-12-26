@@ -60,7 +60,7 @@ public class FurnitureController {
         }
         if ("1".equals(vo.getHasAccessory())) {
             // 获取配件
-            List<FurnitureAccessoryVO> accessories = furnitureaccessoryService.queryByFurnitureId(vo.getFAId(),vo.getFFactoryId());
+            List<FurnitureAccessoryVO> accessories = furnitureaccessoryService.queryByFurnitureId(vo.getFAId(),vo.getFFactoryId(),vo.getFTypeId());
             vo.setFurnitureAccessoryList(accessories);
         }
         return Result.OK(vo);

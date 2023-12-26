@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 public class FurnitureaccessoryServiceImpl extends ServiceImpl<FurnitureaccessoryMapper, Furnitureaccessory> implements FurnitureaccessoryService {
 
     @Override
-    public List<FurnitureAccessoryVO> queryByFurnitureId(String faId, Integer ffId) {
+    public List<FurnitureAccessoryVO> queryByFurnitureId(String faId, Integer ffId,Integer typeId) {
         log.info("查询家具配件, faId:{}", faId);
         List<String> ids = new ArrayList<>();
         if (StrUtil.isNotBlank(faId)) {
@@ -46,6 +46,9 @@ public class FurnitureaccessoryServiceImpl extends ServiceImpl<Furnitureaccessor
         List<FurnitureAccessoryVO> furnitureAccessoryVOS = baseMapper.queryByFurnitureIds(ids, CollUtil.newArrayList(ffId));
         furnitureAccessoryVOS = furnitureAccessoryVOS.stream()
                 .filter(item -> {
+                    if (ObjectUtil.notEqual(item.getFATId(),typeId)) {
+                        return false;
+                    }
                     if ("1".equals(item.getIsPublic())) {
                         if (ObjectUtil.isNull(item.getFAFId())) {
                             return true;
