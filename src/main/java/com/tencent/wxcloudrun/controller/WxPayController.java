@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,6 +34,22 @@ public class WxPayController {
                 one.setFOPayStatus(OrderConstants.ORDER_STATUS_PAYED);
             }
             one.setFOStatus(OrderConstants.ORDER_STATUS_PAYED);
+            furnitureorderService.updateById(one);
+        });
+        Map<String,String> res = new HashMap<>(2);
+        res.put("code",result ?"SUCCESS":"FAIL");
+        res .put("message",result ?"成功":"失败");
+        return res;
+    }
+    @PostMapping(value = "/balanceCallBack")
+    public Map<String,String> balanceCallBack(@RequestBody JSONObject jsonObject) {
+        log.info("微信支付回调，待收尾款");
+        Boolean result = wxPayConfig.notifyExecute(jsonObject,orderNo -> {
+            Furnitureorder one = furnitureorderService.lambdaQuery()
+                    .eq(Furnitureorder::getFONo, orderNo)
+                    .one();
+            one.setFOPayStatus(OrderConstants.ORDER_STATUS_PAYED);
+            one.setFOBalance(BigDecimal.ZERO);
             furnitureorderService.updateById(one);
         });
         Map<String,String> res = new HashMap<>(2);

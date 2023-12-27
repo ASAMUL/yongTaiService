@@ -1,6 +1,5 @@
 package com.tencent.wxcloudrun.vo;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.tencent.wxcloudrun.json.FuJson;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,5 +17,6 @@ public class FurnitureOrderVO {
 
     private String FONo;
     private BigDecimal foPrice;
+    private BigDecimal foBalance;
     private List<FuJson> furnitureList;
 }

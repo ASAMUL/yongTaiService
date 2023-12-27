@@ -110,7 +110,7 @@ public class FurnitureorderServiceImpl extends ServiceImpl<FurnitureorderMapper,
             list.forEach(furnitureorder -> {
                 FurnitureOrderVO furnitureOrderVO = FurnitureOrderVO.builder()
                         .FONo(furnitureorder.getFONo())
-                        .foPrice(furnitureorder.getFOPrice())
+                        .foPrice(furnitureorder.getFODiscountPrice())
                         .furnitureList(JSONUtil.toList(furnitureorder.getFuJson(), FuJson.class))
                         .build();
                 furnitureOrderVos.add(furnitureOrderVO);
@@ -129,7 +129,8 @@ public class FurnitureorderServiceImpl extends ServiceImpl<FurnitureorderMapper,
             list.forEach(furnitureorder -> {
                 FurnitureOrderVO furnitureOrderVO = FurnitureOrderVO.builder()
                         .FONo(furnitureorder.getFONo())
-                        .foPrice(furnitureorder.getFOPrice())
+                        .foPrice(furnitureorder.getFODiscountPrice())
+                        .foBalance(furnitureorder.getFOBalance())
                         .furnitureList(JSONUtil.toList(furnitureorder.getFuJson(), FuJson.class))
                         .build();
                 furnitureOrderVos.add(furnitureOrderVO);
@@ -151,7 +152,8 @@ public class FurnitureorderServiceImpl extends ServiceImpl<FurnitureorderMapper,
             list.forEach(furnitureorder -> {
                 FurnitureOrderVO furnitureOrderVO = FurnitureOrderVO.builder()
                         .FONo(furnitureorder.getFONo())
-                        .foPrice(furnitureorder.getFOPrice())
+                        .foPrice(furnitureorder.getFODiscountPrice())
+
                         .furnitureList(JSONUtil.toList(furnitureorder.getFuJson(), FuJson.class))
                         .build();
                 furnitureOrderVos.add(furnitureOrderVO);
@@ -168,7 +170,7 @@ public class FurnitureorderServiceImpl extends ServiceImpl<FurnitureorderMapper,
             list.forEach(furnitureorder -> {
                 FurnitureOrderVO furnitureOrderVO = FurnitureOrderVO.builder()
                         .FONo(furnitureorder.getFONo())
-                        .foPrice(furnitureorder.getFOPrice())
+                        .foPrice(furnitureorder.getFODiscountPrice())
                         .furnitureList(JSONUtil.toList(furnitureorder.getFuJson(), FuJson.class))
                         .build();
                 furnitureOrderVos.add(furnitureOrderVO);

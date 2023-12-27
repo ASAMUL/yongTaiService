@@ -40,6 +40,7 @@ public class WxPayConfig {
     public String mchId = "1662649945";
     public String appid = "wx061652f065aa74c5";
     public String notifyUrl = "https://springboot-6c9r-82697-6-1322811340.sh.run.tcloudbase.com/wxPay/callBack";
+    public String balanceNotifyUrl = "https://springboot-6c9r-82697-6-1322811340.sh.run.tcloudbase.com/wxPay/balanceCallBack";
     public static String mchSerialNo = "520C811692D95566E5363E8B3ECD2B79F0CBC2BA";
     public static String apiV3Key = "Wtx514SnowMoonFlowersWeiXinShaBi";
     private static final String FILE_PATH = "/apiclient_key.pem";
@@ -128,6 +129,10 @@ public class WxPayConfig {
 
     public String getNotifyUrl() {
         return notifyUrl;
+    }
+
+    public String getBalanceNotifyUrl() {
+        return balanceNotifyUrl;
     }
 
     public Boolean notifyExecute(JSONObject jsonObject, Consumer<String> consumer) {

@@ -28,7 +28,7 @@ public class WxPayServiceImpl implements WxPayService {
         prepayRequest.setMchid(wxPayConfig.getMchId());
         prepayRequest.setOutTradeNo(orderId);
         prepayRequest.setDescription("购买家具");
-        prepayRequest.setNotifyUrl(wxPayConfig.getNotifyUrl());
+        prepayRequest.setNotifyUrl(isDeposit ? wxPayConfig.getBalanceNotifyUrl() : wxPayConfig.getNotifyUrl());
         // 金额
         Amount amount = new Amount();
         BigDecimal p = Convert.toBigDecimal(foDiscountPrice);
