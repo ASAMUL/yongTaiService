@@ -50,6 +50,7 @@ public class WxPayController {
                     .one();
             one.setFOPayStatus(OrderConstants.ORDER_STATUS_PAYED);
             one.setFOBalance(BigDecimal.ZERO);
+            one.setFOStatus(OrderConstants.ORDER_STATUS_PAYED);
             furnitureorderService.updateById(one);
         });
         Map<String,String> res = new HashMap<>(2);
