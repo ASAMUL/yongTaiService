@@ -34,6 +34,11 @@ public class Furnitureorder implements Serializable {
      */
     @TableField("consignee")
     private String  consignee;
+    /**
+     * 尾款订单号
+     */
+    @TableField("balance_order_no")
+    private String balanceOrderNo;
     @TableField("fuJson")
     private String fuJson;
     /**

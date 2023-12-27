@@ -34,4 +34,12 @@ public interface FurnitureorderService extends IService<Furnitureorder> {
      * @return
      */
     Result<List<FurnitureOrderVO>> queryOrderByStatus(String status);
+
+    /**
+     * 尾款支付
+     * @param form
+     * @param request
+     * @return
+     */
+    Result<PrepayWithRequestPaymentResponse> balanceOrder(FurnitureOrderForm form, HttpServletRequest request);
 }

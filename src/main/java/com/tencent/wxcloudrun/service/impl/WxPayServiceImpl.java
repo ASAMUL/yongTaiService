@@ -28,7 +28,7 @@ public class WxPayServiceImpl implements WxPayService {
         prepayRequest.setMchid(wxPayConfig.getMchId());
         prepayRequest.setOutTradeNo(orderId);
         prepayRequest.setDescription("购买家具");
-        prepayRequest.setNotifyUrl(isDeposit ? wxPayConfig.getBalanceNotifyUrl() : wxPayConfig.getNotifyUrl());
+        prepayRequest.setNotifyUrl(wxPayConfig.getNotifyUrl());
         // 金额
         Amount amount = new Amount();
         BigDecimal p = Convert.toBigDecimal(foDiscountPrice);
@@ -38,6 +38,30 @@ public class WxPayServiceImpl implements WxPayService {
         int price = p.multiply(new BigDecimal("100")).intValueExact();
         if (price == 0) {
             throw new RuntimeException("金额转换错误");
+        }
+        amount.setTotal(price);
+        amount.setCurrency("CNY");
+        prepayRequest.setAmount(amount);
+        // 支付人
+        Payer payer = new Payer();
+        payer.setOpenid(request.getHeader("X-WX-OPENID"));
+        prepayRequest.setPayer(payer);
+        return wxPayConfig.payExecute(() -> wxPayConfig.getJsapiService().prepayWithRequestPayment(prepayRequest));
+    }
+
+    @Override
+    public PrepayWithRequestPaymentResponse createWxPaybalanceOrder(HttpServletRequest request, String orderId, BigDecimal balancePrice) {
+        PrepayRequest prepayRequest = new PrepayRequest();
+        prepayRequest.setAppid(wxPayConfig.getAppid());
+        prepayRequest.setMchid(wxPayConfig.getMchId());
+        prepayRequest.setOutTradeNo(orderId);
+        prepayRequest.setDescription("家具支付尾款");
+        prepayRequest.setNotifyUrl(wxPayConfig.getBalanceNotifyUrl());
+        // 金额
+        Amount amount = new Amount();
+        int price = balancePrice.setScale(2,RoundingMode.HALF_UP).multiply(new BigDecimal("100")).intValueExact();
+        if (price == 0) {
+            throw new RuntimeException("金额为0");
         }
         amount.setTotal(price);
         amount.setCurrency("CNY");

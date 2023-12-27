@@ -46,7 +46,7 @@ public class WxPayController {
         log.info("微信支付回调，待收尾款");
         Boolean result = wxPayConfig.notifyExecute(jsonObject,orderNo -> {
             Furnitureorder one = furnitureorderService.lambdaQuery()
-                    .eq(Furnitureorder::getFONo, orderNo)
+                    .eq(Furnitureorder::getBalanceOrderNo, orderNo)
                     .one();
             one.setFOPayStatus(OrderConstants.ORDER_STATUS_PAYED);
             one.setFOBalance(BigDecimal.ZERO);

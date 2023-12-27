@@ -30,7 +30,10 @@ public class FurnitureorderController {
 
     private final FurnitureorderService furnitureorderService;
 
-
+    @PostMapping(value = "/balance")
+    public Result<PrepayWithRequestPaymentResponse> balanceOrder (@RequestBody FurnitureOrderForm form, HttpServletRequest request){
+        return furnitureorderService.balanceOrder(form,request);
+    }
     @PostMapping(value = "/createOrder")
     public Result<PrepayWithRequestPaymentResponse> createOrder (@RequestBody FurnitureOrderForm form, HttpServletRequest request){
         return furnitureorderService.createOrder(form,request);

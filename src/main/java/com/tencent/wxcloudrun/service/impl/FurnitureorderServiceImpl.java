@@ -3,30 +3,29 @@ package com.tencent.wxcloudrun.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tencent.wxcloudrun.config.UserContextHolder;
-import com.tencent.wxcloudrun.entity.Furniture;
-import com.tencent.wxcloudrun.entity.Furnitureorder;
+import com.tencent.wxcloudrun.constants.OrderConstants;
 import com.tencent.wxcloudrun.dao.FurnitureorderMapper;
+import com.tencent.wxcloudrun.entity.Furnitureorder;
 import com.tencent.wxcloudrun.entity.Result;
 import com.tencent.wxcloudrun.form.FurnitureOrderForm;
 import com.tencent.wxcloudrun.json.FuJson;
 import com.tencent.wxcloudrun.service.CartService;
 import com.tencent.wxcloudrun.service.FurnitureService;
 import com.tencent.wxcloudrun.service.FurnitureorderService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tencent.wxcloudrun.service.WxPayService;
 import com.tencent.wxcloudrun.vo.FurnitureOrderVO;
-import com.tencent.wxcloudrun.vo.WxPrepayRes;
 import com.wechat.pay.java.service.payments.jsapi.model.PrepayWithRequestPaymentResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import com.tencent.wxcloudrun.constants.OrderConstants;
+
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.tencent.wxcloudrun.constants.WeChatConstants.OPEN_ID;
@@ -46,6 +45,7 @@ public class FurnitureorderServiceImpl extends ServiceImpl<FurnitureorderMapper,
     public final WxPayService wxPayService;
     public final FurnitureService furnitureService;
     public final CartService cartService;
+
     @Override
     public Result<PrepayWithRequestPaymentResponse> createOrder(FurnitureOrderForm form, HttpServletRequest request) {
         if (StrUtil.isBlank(request.getHeader(OPEN_ID))) {
@@ -72,7 +72,7 @@ public class FurnitureorderServiceImpl extends ServiceImpl<FurnitureorderMapper,
                 .FONo(orderNo)
                 .FOCId(UserContextHolder.getUserId())
                 // 订单余款
-                .FOBalance(isDeposit ? foDiscountPrice.subtract(foDiscountPrice.multiply(new BigDecimal("0.3"))): null)
+                .FOBalance(isDeposit ? foDiscountPrice.subtract(foDiscountPrice.multiply(new BigDecimal("0.3"))) : null)
                 // 订单状态
                 .FOStatus(OrderConstants.ORDER_STATUS_WAIT_PAY)
                 // 支付状态
@@ -85,9 +85,9 @@ public class FurnitureorderServiceImpl extends ServiceImpl<FurnitureorderMapper,
                 log.info("删除购物车分支");
                 cartService.removeBatchByIds(form.getCartIdList());
             }
-            PrepayWithRequestPaymentResponse wxPayOrder = wxPayService.createWxPayOrder(request, orderNo,form.getFoDiscountPrice(),isDeposit);
+            PrepayWithRequestPaymentResponse wxPayOrder = wxPayService.createWxPayOrder(request, orderNo, form.getFoDiscountPrice(), isDeposit);
             return Result.OK(wxPayOrder);
-        }else {
+        } else {
             throw new RuntimeException("创建订单失败");
         }
 
@@ -159,7 +159,7 @@ public class FurnitureorderServiceImpl extends ServiceImpl<FurnitureorderMapper,
                 furnitureOrderVos.add(furnitureOrderVO);
             });
             return Result.OK(furnitureOrderVos);
-        } else  {
+        } else {
             log.info("进入已完成状态分支");
             List<Furnitureorder> list = this.lambdaQuery()
                     .eq(Furnitureorder::getFOCId, UserContextHolder.getUserId())
@@ -177,5 +177,24 @@ public class FurnitureorderServiceImpl extends ServiceImpl<FurnitureorderMapper,
             });
             return Result.OK(furnitureOrderVos);
         }
+    }
+
+    @Override
+    public Result<PrepayWithRequestPaymentResponse> balanceOrder(FurnitureOrderForm form, HttpServletRequest request) {
+        Furnitureorder furnitureorder = this.lambdaQuery()
+                .eq(Furnitureorder::getFONo, form.getOrderNo())
+                .eq(Furnitureorder::getIsDeleted, "0")
+                .one();
+        if (ObjectUtil.isNull(furnitureorder)) {
+            throw new RuntimeException("订单不存在");
+        }
+        String nextIdStr = IdUtil.getSnowflake().nextIdStr();
+        furnitureorder.setBalanceOrderNo(nextIdStr);
+        boolean b = this.updateById(furnitureorder);
+        if (!b) {
+            throw new RuntimeException("创建订单失败");
+        }
+        PrepayWithRequestPaymentResponse wxPaybalanceOrder = wxPayService.createWxPaybalanceOrder(request, nextIdStr, form.getBalancePrice());
+        return Result.OK(wxPaybalanceOrder)  ;
     }
 }
