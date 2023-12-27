@@ -78,23 +78,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public Result<String> updateInvitationCode(HttpServletRequest request, String invitationCode) {
+    public Result updateInvitationCode(HttpServletRequest request, String invitationCode) {
         User one = this.lambdaQuery()
                 .eq(User::getWeixinOpenid, AESUtil.encrypt(request.getHeader(OPEN_ID)))
                 .one();
-        if (one.getUserParentId() != null) {
-            return Result.OK("已经绑定过邀请码");
+        if (ObjectUtil.isNotNull(one.getUserParentId())) {
+            return Result.error("已经绑定过邀请码");
         }
         User parentUser = getUserByInviteCode(invitationCode);
         if (ObjectUtil.isNotNull(parentUser)) {
             if (ObjectUtil.equal(one.getUserId(), parentUser.getUserId())) {
-                return Result.OK("不能绑定自己的邀请码");
+                return Result.error("不能绑定自己的邀请码");
             }
             one.setUserParentId(parentUser.getUserId());
             this.updateById(one);
             return Result.OK("绑定成功");
         } else {
-            return Result.OK("邀请码不存在");
+            return Result.error("邀请码不存在");
         }
 
     }
