@@ -117,6 +117,25 @@ public class FurnitureorderServiceImpl extends ServiceImpl<FurnitureorderMapper,
             });
             return Result.OK(furnitureOrderVos);
         }
+        // 查询待付尾款订单
+        if (OrderConstants.ORDER_STATUS_WAIT_BALANCE.equals(status)) {
+            log.info("进入待付尾款状态分支");
+            List<Furnitureorder> list = this.lambdaQuery()
+                    .eq(Furnitureorder::getFOCId, UserContextHolder.getUserId())
+                    .eq(Furnitureorder::getIsDeleted, "0")
+                    .eq(Furnitureorder::getFOPayStatus, OrderConstants.ORDER_STATUS_WAIT_BALANCE)
+                    .list();
+            List<FurnitureOrderVO> furnitureOrderVos = CollUtil.newArrayList();
+            list.forEach(furnitureorder -> {
+                FurnitureOrderVO furnitureOrderVO = FurnitureOrderVO.builder()
+                        .FONo(furnitureorder.getFONo())
+                        .foPrice(furnitureorder.getFOPrice())
+                        .furnitureList(JSONUtil.toList(furnitureorder.getFuJson(), FuJson.class))
+                        .build();
+                furnitureOrderVos.add(furnitureOrderVO);
+            });
+            return Result.OK(furnitureOrderVos);
+        }
         if (status.equals(OrderConstants.ORDER_STATUS_PAYED)) {
             log.info("进入待收货状态分支");
             List<Furnitureorder> list = this.lambdaQuery()

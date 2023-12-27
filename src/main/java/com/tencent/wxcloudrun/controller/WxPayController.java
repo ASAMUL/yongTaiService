@@ -29,7 +29,9 @@ public class WxPayController {
             Furnitureorder one = furnitureorderService.lambdaQuery()
                     .eq(Furnitureorder::getFONo, orderNo)
                     .one();
-            one.setFOPayStatus(OrderConstants.ORDER_STATUS_PAYED);
+            if (!OrderConstants.ORDER_STATUS_WAIT_BALANCE.equals(one.getFOPayStatus())) {
+                one.setFOPayStatus(OrderConstants.ORDER_STATUS_PAYED);
+            }
             one.setFOStatus(OrderConstants.ORDER_STATUS_PAYED);
             furnitureorderService.updateById(one);
         });
