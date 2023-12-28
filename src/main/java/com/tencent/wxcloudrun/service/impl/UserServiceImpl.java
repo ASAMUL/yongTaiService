@@ -99,9 +99,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     }
 
+    @Override
+    public Result<UserInfoVO> getUserByOpenId(HttpServletRequest request) {
+        log.info("获取用户信息开始");
+        User userByOpenId = getUserByOpenId(request.getHeader(OPEN_ID));
+        if (ObjectUtil.isNull(userByOpenId)) {
+            return Result.fail("用户不存在");
+        }
+        return Result.OK(creatUserInfo(userByOpenId));
+    }
+
     private User getUserByInviteCode(String invitationCode) {
         return this.lambdaQuery()
                 .eq(User::getUserInviteCode, invitationCode)
+                .one();
+    }
+    private User getUserByOpenId(String openId) {
+        return this.lambdaQuery()
+                .eq(User::getWeixinOpenid, AESUtil.encrypt(openId))
                 .one();
     }
 

@@ -30,4 +30,11 @@ public interface UserService extends IService<User> {
      * @return
      */
     Result<String> updateInvitationCode(HttpServletRequest request,String invitationCode);
+
+    /**
+     * 获取用户信息
+     * @param request
+     * @return
+     */
+    Result<UserInfoVO> getUserByOpenId(HttpServletRequest request);
 }

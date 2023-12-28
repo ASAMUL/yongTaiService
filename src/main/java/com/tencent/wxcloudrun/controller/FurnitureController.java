@@ -2,6 +2,7 @@ package com.tencent.wxcloudrun.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.tencent.wxcloudrun.entity.Furnitureaccessory;
 import com.tencent.wxcloudrun.entity.Result;
@@ -84,6 +85,6 @@ public class FurnitureController {
         return new ResponseEntity<>("updated successfully", HttpStatus.OK);
     }
     private boolean equalsPriceZreo(BigDecimal price) {
-        return price.equals(new BigDecimal("0.00")) || price.equals(new BigDecimal("0.0")) || price.equals(new BigDecimal("0"));
+        return ObjectUtil.isNull(price) || price.equals(new BigDecimal("0.00")) || price.equals(new BigDecimal("0.0")) || price.equals(new BigDecimal("0"));
     }
 }

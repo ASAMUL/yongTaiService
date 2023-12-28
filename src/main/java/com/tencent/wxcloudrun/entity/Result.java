@@ -55,7 +55,13 @@ public class Result<T> implements Serializable {
         r.setMessage("成功");
         return r;
     }
-
+    public static<T> Result<T> fail(String msg) {
+        Result<T> r = new Result<T>();
+        r.setSuccess(false);
+        r.setCode(500);
+        r.setMessage(msg);
+        return r;
+    }
     public static<T> Result<T> OK(T data) {
         Result<T> r = new Result<T>();
         r.setSuccess(true);

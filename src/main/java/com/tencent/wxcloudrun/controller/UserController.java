@@ -3,6 +3,7 @@ package com.tencent.wxcloudrun.controller;
 import com.tencent.wxcloudrun.entity.Result;
 import com.tencent.wxcloudrun.entity.User;
 import com.tencent.wxcloudrun.service.UserService;
+import com.tencent.wxcloudrun.vo.UserInfoVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,10 +33,7 @@ public class UserController {
     }
 
     @GetMapping
-    public Result<User> getUserByOpenId(HttpServletRequest request) {
-        User one = userService.lambdaQuery()
-                .eq(User::getWeixinOpenid, request.getHeader(OPEN_ID))
-                .one();
-        return Result.OK(one);
+    public Result<UserInfoVO> getUserByOpenId(HttpServletRequest request) {
+        return  userService.getUserByOpenId(request);
     }
 }
