@@ -14,4 +14,5 @@ public class UserInfoVO {
     private String avatarUrl;
     private String token;
     private String userId;
+    private String parentCode;
 }

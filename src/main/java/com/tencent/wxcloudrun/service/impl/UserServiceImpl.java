@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 
+import static com.tencent.wxcloudrun.constants.UserConstants.USER_INVITE_PREFIX;
 import static com.tencent.wxcloudrun.constants.WeChatConstants.OPEN_ID;
 
 /**
@@ -126,6 +127,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .userId(Convert.toStr(user.getUserId()))
                 .nickName(user.getNickName())
                 .token(user.getWeixinOpenid())
+                .parentCode(ObjectUtil.isNotNull(user.getUserParentId()) ? USER_INVITE_PREFIX + user.getUserParentId() :null)
                 .build();
     }
 }
