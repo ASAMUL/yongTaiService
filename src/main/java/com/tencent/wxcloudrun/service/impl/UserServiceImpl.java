@@ -116,7 +116,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         this.lambdaUpdate()
                 .eq(User::getWeixinOpenid, AESUtil.encrypt(request.getHeader(OPEN_ID)))
                 .set(StrUtil.isNotBlank(form.getNickName()),User::getNickName, form.getNickName())
-                .set(StrUtil.isNotBlank(form.getBaseAvatarUrl()),User::getBaseAvatarUrl, form.getAvatarUrl())
+                .set(StrUtil.isNotBlank(form.getBaseAvatarUrl()),User::getBaseAvatarUrl, form.getBaseAvatarUrl())
                 .update();
         return Result.OK("更新成功");
     }
