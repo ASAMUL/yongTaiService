@@ -2,6 +2,7 @@ package com.tencent.wxcloudrun.controller;
 
 import com.tencent.wxcloudrun.entity.Result;
 import com.tencent.wxcloudrun.entity.User;
+import com.tencent.wxcloudrun.form.UserForm;
 import com.tencent.wxcloudrun.service.UserService;
 import com.tencent.wxcloudrun.vo.UserInfoVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,10 @@ public class UserController {
     public Result<String> updateInvitationCode(HttpServletRequest request, @PathVariable("invitationCode") String invitationCode) {
         return userService.updateInvitationCode(request, invitationCode);
     }
-
+    @PutMapping
+    public Result<String> update(HttpServletRequest request, @RequestBody UserForm form) {
+        return userService.update(request, form);
+    }
     @GetMapping
     public Result<UserInfoVO> getUserByOpenId(HttpServletRequest request) {
         return  userService.getUserByOpenId(request);

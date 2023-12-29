@@ -78,5 +78,11 @@ public class FurnitureType implements Serializable {
      */
     @TableField("IsDeleted")
     private String IsDeleted;
+    /**
+     * 排序
+     *
+     */
+    @TableField("sort")
+    private Integer sort;
 
 }

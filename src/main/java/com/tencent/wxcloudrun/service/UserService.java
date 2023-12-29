@@ -37,4 +37,12 @@ public interface UserService extends IService<User> {
      * @return
      */
     Result<UserInfoVO> getUserByOpenId(HttpServletRequest request);
+
+    /**
+     * 更新用户信息
+     * @param request
+     * @param form
+     * @return
+     */
+    Result<String> update(HttpServletRequest request, UserForm form);
 }

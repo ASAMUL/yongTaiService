@@ -72,7 +72,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
 
         this.save(user);
-        user.setUserInviteCode("WTX" + user.getUserId());
+        user.setUserInviteCode(USER_INVITE_PREFIX + user.getUserId());
         this.updateById(user);
         return Result.OK(creatUserInfo(user));
 
@@ -110,6 +110,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return Result.OK(creatUserInfo(userByOpenId));
     }
 
+    @Override
+    public Result<String> update(HttpServletRequest request, UserForm form) {
+        log.info("更新用户信息开始, form:{}", JSONUtil.toJsonStr(form));
+        this.lambdaUpdate()
+                .eq(User::getWeixinOpenid, AESUtil.encrypt(request.getHeader(OPEN_ID)))
+                .set(StrUtil.isNotBlank(form.getNickName()),User::getNickName, form.getNickName())
+                .set(StrUtil.isNotBlank(form.getBaseAvatarUrl()),User::getBaseAvatarUrl, form.getAvatarUrl())
+                .update();
+        return Result.OK("更新成功");
+    }
+
     private User getUserByInviteCode(String invitationCode) {
         return this.lambdaQuery()
                 .eq(User::getUserInviteCode, invitationCode)
@@ -128,6 +139,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .nickName(user.getNickName())
                 .token(user.getWeixinOpenid())
                 .parentCode(ObjectUtil.isNotNull(user.getUserParentId()) ? USER_INVITE_PREFIX + user.getUserParentId() :null)
+                .baseAvatarUrl(user.getBaseAvatarUrl())
                 .build();
     }
 }

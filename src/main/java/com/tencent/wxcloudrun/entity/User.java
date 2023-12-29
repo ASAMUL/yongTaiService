@@ -35,6 +35,11 @@ public class User implements Serializable {
     @TableField("UserName")
     private String UserName;
     /**
+     * 用户的base64头像
+     */
+    @TableField("baseAvatarUrl")
+    private String baseAvatarUrl;
+    /**
      * 对应上级用户id
      */
     @TableField("userParentId")
