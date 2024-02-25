@@ -3,6 +3,10 @@ server:
 
 
 spring:
+  redis:
+    host: 101.34.72.201
+    port: 6379
+    password: wtx123
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://${MYSQL_ADDRESS}/yongTai

@@ -5,7 +5,9 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.tencent.wxcloudrun.constants.RedisKeys;
 import com.tencent.wxcloudrun.dao.FurnitureMapper;
 import com.tencent.wxcloudrun.dao.FurnitureaccessoryMapper;
 import com.tencent.wxcloudrun.entity.Furniture;
@@ -18,10 +20,15 @@ import com.tencent.wxcloudrun.vo.FurnitureAccessoryVO;
 import com.tencent.wxcloudrun.vo.FurnitureVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -39,10 +46,15 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
     private final FurnituretypeService furnituretypeService;
     private final FurnitureaccessoryService furnitureaccessoryService;
     private final FurnitureaccessoryMapper furnitureaccessoryMapper;
+    private final StringRedisTemplate redisTemplate;
 
     @Override
     public Result<List<FurnitureVO>> queryFurnitureByType(String type, String isParent) {
         log.info("根据类型查询家具开始====》,type:{},isParent:{}", type, isParent);
+        String furnitureByRedis = redisTemplate.opsForValue().get(RedisKeys.FURNITURE_BY_TYPE);
+        if (StrUtil.isNotBlank(furnitureByRedis)) {
+            return Result.OK(JSONUtil.toList(furnitureByRedis, FurnitureVO.class));
+        }
         List<Furniture> list = new ArrayList<>();
         if (StrUtil.isNotBlank(isParent)) {
             // 查询父级类型
@@ -129,6 +141,7 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
 
             });
         }
+        redisTemplate.opsForValue().set(RedisKeys.FURNITURE_BY_TYPE,JSONUtil.toJsonStr(collect),1, TimeUnit.HOURS);
         return Result.OK(collect);
     }
     private boolean equalsPriceZreo(BigDecimal price){
