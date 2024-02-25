@@ -51,7 +51,7 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
     @Override
     public Result<List<FurnitureVO>> queryFurnitureByType(String type, String isParent) {
         log.info("根据类型查询家具开始====》,type:{},isParent:{}", type, isParent);
-        String furnitureByRedis = redisTemplate.opsForValue().get(RedisKeys.FURNITURE_BY_TYPE);
+        String furnitureByRedis = redisTemplate.opsForValue().get(RedisKeys.FURNITURE_BY_TYPE + "_" + type);
         if (StrUtil.isNotBlank(furnitureByRedis)) {
             return Result.OK(JSONUtil.toList(furnitureByRedis, FurnitureVO.class));
         }
@@ -141,7 +141,7 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
 
             });
         }
-        redisTemplate.opsForValue().set(RedisKeys.FURNITURE_BY_TYPE,JSONUtil.toJsonStr(collect),1, TimeUnit.HOURS);
+        redisTemplate.opsForValue().set(RedisKeys.FURNITURE_BY_TYPE + "_" + type,JSONUtil.toJsonStr(collect),1, TimeUnit.HOURS);
         return Result.OK(collect);
     }
     private boolean equalsPriceZreo(BigDecimal price){
