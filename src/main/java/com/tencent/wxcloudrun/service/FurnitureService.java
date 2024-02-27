@@ -37,4 +37,12 @@ public interface FurnitureService extends IService<Furniture> {
      * @return 家具
      */
     FurnitureVO getByIdSql(String id);
+
+    /**
+     * 根据分页查询家具
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    Result<List<FurnitureVO>> getBypage(Integer pageNum, Integer pageSize);
 }

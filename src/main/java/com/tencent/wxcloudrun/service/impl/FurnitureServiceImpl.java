@@ -6,6 +6,7 @@ import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.tencent.wxcloudrun.constants.RedisKeys;
 import com.tencent.wxcloudrun.dao.FurnitureMapper;
@@ -221,5 +222,17 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
     @Override
     public FurnitureVO getByIdSql(String id) {
         return baseMapper.getById(id);
+    }
+
+    @Override
+    public Result<List<FurnitureVO>> getBypage(Integer pageNum, Integer pageSize) {
+        log.info("根据分页查询家具开始，参数:pageNum:{},pageSize:{}",pageNum,pageSize);
+        Page<Furniture> page = this.page(new Page<>(pageNum, pageSize));
+        List<Furniture> records = page.getRecords();
+        List<FurnitureVO> collect = records.stream()
+                .map((item) -> BeanUtil.copyProperties(item, FurnitureVO.class))
+                .collect(Collectors.toList());
+
+        return Result.OK(collect);
     }
 }

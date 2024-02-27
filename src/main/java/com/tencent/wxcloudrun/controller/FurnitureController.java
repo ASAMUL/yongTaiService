@@ -49,6 +49,11 @@ public class FurnitureController {
         return furnitureService.getBySearch(name);
 
     }
+    @GetMapping(value = "/page")
+    public Result<List<FurnitureVO>> page(@RequestParam("pageNum") Integer pageNum,  @RequestParam("pageSize") Integer pageSize) {
+        return furnitureService.getBypage(pageNum,pageSize);
+
+    }
     @GetMapping(value = "/{id}")
     public Result<FurnitureVO> getById(@PathVariable("id") String id) {
         FurnitureVO vo = furnitureService.getByIdSql(id);
