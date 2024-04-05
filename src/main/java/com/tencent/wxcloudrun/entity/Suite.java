@@ -35,6 +35,7 @@ public class Suite implements Serializable {
     private String desc;
     @TableField("url")
     private String url;
+
     @TableField("`name`")
     private String name;
 
