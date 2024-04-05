@@ -31,11 +31,11 @@ public class Suite implements Serializable {
      */
     @TableId("id")
     private Integer id;
-    @TableField("desc")
+    @TableField("`desc`")
     private String desc;
     @TableField("url")
     private String url;
-    @TableField("name")
+    @TableField("`name`")
     private String name;
 
     @TableField("price")
