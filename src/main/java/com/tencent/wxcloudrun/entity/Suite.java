@@ -31,7 +31,10 @@ public class Suite implements Serializable {
      */
     @TableId("id")
     private Integer id;
-
+    @TableField("desc")
+    private String desc;
+    @TableField("url")
+    private String url;
     @TableField("name")
     private String name;
 
