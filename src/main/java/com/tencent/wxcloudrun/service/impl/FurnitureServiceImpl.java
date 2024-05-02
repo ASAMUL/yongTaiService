@@ -142,7 +142,7 @@ public class FurnitureServiceImpl extends ServiceImpl<FurnitureMapper, Furniture
 
             });
         }
-        redisTemplate.opsForValue().set(RedisKeys.FURNITURE_BY_TYPE + "_" + type,JSONUtil.toJsonStr(collect),1, TimeUnit.HOURS);
+        redisTemplate.opsForValue().set(RedisKeys.FURNITURE_BY_TYPE + "_" + type,JSONUtil.toJsonStr(collect),10, TimeUnit.SECONDS);
         return Result.OK(collect);
     }
     private boolean equalsPriceZreo(BigDecimal price){
