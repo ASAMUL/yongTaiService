@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
+import java.util.List;
 
 import lombok.*;
 
@@ -59,5 +60,7 @@ public class Suite implements Serializable {
 
     @TableField("furniture_ids")
     private String furnitureIds;
+    @TableField(exist = false)
+    private List<Furniture> furnitures;
 
 }

@@ -2,6 +2,7 @@ package com.tencent.wxcloudrun.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.tencent.wxcloudrun.entity.Furnitureaccessory;
@@ -9,7 +10,9 @@ import com.tencent.wxcloudrun.entity.Result;
 import com.tencent.wxcloudrun.service.FurnitureaccessoryService;
 import com.tencent.wxcloudrun.vo.FurnitureAccessoryVO;
 import com.tencent.wxcloudrun.vo.FurnitureVO;
+import io.netty.util.internal.StringUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.http.HttpStatus;
@@ -19,6 +22,7 @@ import com.tencent.wxcloudrun.entity.Furniture;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,6 +42,22 @@ public class FurnitureController {
 
     private final FurnitureService furnitureService;
     private final FurnitureaccessoryService furnitureaccessoryService;
+    @GetMapping(value = "/testPrice")
+    @Transactional(rollbackFor = Exception.class)
+    public Result<String> testPrice() {
+        List<Furniture> list = furnitureService.list();
+        list.forEach(item -> {
+            BigDecimal price = item.getFPrice()
+                    .divide(new BigDecimal("100"), RoundingMode.DOWN).setScale(0,RoundingMode.DOWN);
+            BigDecimal multiply = price.multiply(new BigDecimal("100"));
+            BigDecimal add = multiply.add(new BigDecimal("80"));
+
+
+            item.setFPrice(add);
+        });
+        furnitureService.updateBatchById(list);
+       return Result.OK("success");
+    }
 
     @GetMapping(value = "/queryFurnitureByType")
     public Result<List<FurnitureVO>> list(@RequestParam("type") String type,@RequestParam(value = "isParent",required = false) String isParent) {

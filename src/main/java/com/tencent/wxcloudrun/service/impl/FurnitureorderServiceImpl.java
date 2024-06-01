@@ -26,7 +26,9 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.tencent.wxcloudrun.constants.WeChatConstants.OPEN_ID;
 
@@ -100,83 +102,54 @@ public class FurnitureorderServiceImpl extends ServiceImpl<FurnitureorderMapper,
             throw new RuntimeException("用户未登录");
         }
         // 如果是0 查询所有订单
+        log.info("进入状态分支，状态: {}", status);
+
+        List<Furnitureorder> list = this.lambdaQuery()
+                .eq(Furnitureorder::getFOCId, UserContextHolder.getUserId())
+                .eq(Furnitureorder::getIsDeleted, "0")
+                .orderByDesc(Furnitureorder::getCreateTime)
+                .list();
+        if (CollUtil.isEmpty(list)) {
+            return Result.OK(Collections.emptyList());
+        }
         if ("0".equals(status)) {
             log.info("进入所有订单分支");
-            List<Furnitureorder> list = this.lambdaQuery()
-                    .eq(Furnitureorder::getFOCId, UserContextHolder.getUserId())
-                    .eq(Furnitureorder::getIsDeleted, "0")
-                    .list();
-            List<FurnitureOrderVO> furnitureOrderVos = CollUtil.newArrayList();
-            list.forEach(furnitureorder -> {
-                FurnitureOrderVO furnitureOrderVO = FurnitureOrderVO.builder()
-                        .FONo(furnitureorder.getFONo())
-                        .foPrice(furnitureorder.getFODiscountPrice())
-                        .furnitureList(JSONUtil.toList(furnitureorder.getFuJson(), FuJson.class))
-                        .build();
-                furnitureOrderVos.add(furnitureOrderVO);
-            });
-            return Result.OK(furnitureOrderVos);
-        }
-        // 查询待付尾款订单
-        if (OrderConstants.ORDER_STATUS_WAIT_BALANCE.equals(status)) {
+        } else if (OrderConstants.ORDER_STATUS_WAIT_BALANCE.equals(status)) {
             log.info("进入待付尾款状态分支");
-            List<Furnitureorder> list = this.lambdaQuery()
-                    .eq(Furnitureorder::getFOCId, UserContextHolder.getUserId())
-                    .eq(Furnitureorder::getIsDeleted, "0")
-                    .eq(Furnitureorder::getFOPayStatus, OrderConstants.ORDER_STATUS_WAIT_BALANCE)
-                    .list();
-            List<FurnitureOrderVO> furnitureOrderVos = CollUtil.newArrayList();
-            list.forEach(furnitureorder -> {
-                FurnitureOrderVO furnitureOrderVO = FurnitureOrderVO.builder()
-                        .FONo(furnitureorder.getFONo())
-                        .foPrice(furnitureorder.getFODiscountPrice())
-                        .foBalance(furnitureorder.getFOBalance())
-                        .furnitureList(JSONUtil.toList(furnitureorder.getFuJson(), FuJson.class))
-                        .build();
-                furnitureOrderVos.add(furnitureOrderVO);
-            });
-            return Result.OK(furnitureOrderVos);
-        }
-        if (status.equals(OrderConstants.ORDER_STATUS_PAYED)) {
+            list = list.stream()
+                    .filter(f -> OrderConstants.ORDER_STATUS_WAIT_BALANCE.equals(f.getFOPayStatus()))
+                    .collect(Collectors.toList());
+        } else if (OrderConstants.ORDER_STATUS_PAYED.equals(status)) {
             log.info("进入待收货状态分支");
-            List<Furnitureorder> list = this.lambdaQuery()
-                    .eq(Furnitureorder::getFOCId, UserContextHolder.getUserId())
-                    .eq(Furnitureorder::getIsDeleted, "0")
-                    .and(i -> i.eq(Furnitureorder::getFOPayType, OrderConstants.ORDER_STATUS_PAYED)
-                            .or()
-                            .eq(Furnitureorder::getFOStatus, OrderConstants.ORDER_STATUS_PAYED)
-                            .eq(Furnitureorder::getFOPayStatus, OrderConstants.ORDER_STATUS_PAYED)
-                    )
-                    .list();
-            List<FurnitureOrderVO> furnitureOrderVos = CollUtil.newArrayList();
-            list.forEach(furnitureorder -> {
-                FurnitureOrderVO furnitureOrderVO = FurnitureOrderVO.builder()
-                        .FONo(furnitureorder.getFONo())
-                        .foPrice(furnitureorder.getFODiscountPrice())
-
-                        .furnitureList(JSONUtil.toList(furnitureorder.getFuJson(), FuJson.class))
-                        .build();
-                furnitureOrderVos.add(furnitureOrderVO);
-            });
-            return Result.OK(furnitureOrderVos);
-        } else {
+            list = list.stream()
+                    .filter(f -> OrderConstants.ORDER_STATUS_PAYED.equals(f.getFOPayType()) ||
+                            (OrderConstants.ORDER_STATUS_PAYED.equals(f.getFOStatus()) &&
+                                    OrderConstants.ORDER_STATUS_PAYED.equals(f.getFOPayStatus())))
+                    .collect(Collectors.toList());
+        } else if (OrderConstants.ORDER_STATUS_FINISH.equals(status)) {
             log.info("进入已完成状态分支");
-            List<Furnitureorder> list = this.lambdaQuery()
-                    .eq(Furnitureorder::getFOCId, UserContextHolder.getUserId())
-                    .eq(Furnitureorder::getFOStatus, OrderConstants.ORDER_STATUS_FINISH)
-                    .eq(Furnitureorder::getIsDeleted, "0")
-                    .list();
-            List<FurnitureOrderVO> furnitureOrderVos = CollUtil.newArrayList();
-            list.forEach(furnitureorder -> {
-                FurnitureOrderVO furnitureOrderVO = FurnitureOrderVO.builder()
-                        .FONo(furnitureorder.getFONo())
-                        .foPrice(furnitureorder.getFODiscountPrice())
-                        .furnitureList(JSONUtil.toList(furnitureorder.getFuJson(), FuJson.class))
-                        .build();
-                furnitureOrderVos.add(furnitureOrderVO);
-            });
-            return Result.OK(furnitureOrderVos);
+            list = list.stream()
+                    .filter(f -> OrderConstants.ORDER_STATUS_FINISH.equals(f.getFOStatus()))
+                    .collect(Collectors.toList());
+        } else {
+            log.warn("未知的状态: {}", status);
+            return Result.OK(Collections.emptyList());
         }
+
+        List<FurnitureOrderVO> furnitureOrderVos = list.stream().map(furnitureorder -> {
+            FurnitureOrderVO.FurnitureOrderVOBuilder builder = FurnitureOrderVO.builder()
+                    .FONo(furnitureorder.getFONo())
+                    .foPrice(furnitureorder.getFODiscountPrice())
+                    .furnitureList(JSONUtil.toList(furnitureorder.getFuJson(), FuJson.class));
+
+            if (OrderConstants.ORDER_STATUS_WAIT_BALANCE.equals(status)) {
+                builder.foBalance(furnitureorder.getFOBalance());
+            }
+
+            return builder.build();
+        }).collect(Collectors.toList());
+
+        return Result.OK(furnitureOrderVos);
     }
 
     @Override
@@ -195,6 +168,6 @@ public class FurnitureorderServiceImpl extends ServiceImpl<FurnitureorderMapper,
             throw new RuntimeException("创建订单失败");
         }
         PrepayWithRequestPaymentResponse wxPaybalanceOrder = wxPayService.createWxPaybalanceOrder(request, nextIdStr, form.getBalancePrice());
-        return Result.OK(wxPaybalanceOrder)  ;
+        return Result.OK(wxPaybalanceOrder);
     }
 }
